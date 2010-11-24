@@ -38,10 +38,10 @@ foreach my $appname (@appnames) {
     if ($apps->{$appname}->{prebuild}) {
         if (ref $apps->{$appname}->{prebuild} eq 'ARRAY') {
             foreach my $command (@{$apps->{$appname}->{prebuild}}) {
-                exec($command);
+                system($command);
             }
         } else {
-            exec($apps->{$appname}->{prebuild});
+            system($apps->{$appname}->{prebuild});
         }
     }
 }
@@ -64,16 +64,20 @@ foreach my $templatefile (keys %templatefiles) {
     }
 
 }
+
 chmod 0744,'debian/rules';
 
 foreach my $appname (@appnames) {
     my $installfile = create_installfile(%config, $appname, $apps->{$appname});
     write_file('debian/' . $appname . '.install', $installfile);
     if ($apps->{$appname}->{cron}) {
-        # check if it's an array or a scalar
-        # TODO lukas
-        my $stuff = '';
-        write_file('debian/' . $appname . '.cron', $stuff);
+        my $scheduling;
+        my $cron_data;
+        foreach my $command (keys %{$apps->{$appname}->{cron}}) {
+            $scheduling = $apps->{$appname}->{cron}->{$command};
+            $cron_data.= "$scheduling www-data cd _-_WWWROOT_-_-$appname && php app/ $appname /console $command\n";
+        }
+        write_file("debian/$config{PACKAGENAME}-$appname.cron.d", $cron_data);
     }
 }
 
@@ -202,7 +206,4 @@ sub build_control_file {
     # the template file already contains the source package declaration.
     # for each application we need to add a binary package declarataion from a template.
     #TODO
-
-
-
 }
