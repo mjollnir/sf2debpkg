@@ -1,0 +1,82 @@
+Template: _-_PACKAGENAME_-_/protocol
+Type: select
+Default: httponly
+Choices: httponly, mixed, httpsonly
+Description: Site protocol:
+ Which protocols should this site be served over
+ .
+ 'httponly' is the safe option here, other options will ask you difficult questions
+ about IP addresses, ports, and the like
+
+Template: _-_PACKAGENAME_-_/webroot
+Type: string
+Default:
+Description: Website domain and path:
+ This is the main domain and path of the _-_SITENAME_-_ _-_SITETYPE_-_ install.
+ .
+ Note that this is not a full url, so for "http://site.com" you only
+ need to enter "site.com"
+
+Template: _-_PACKAGENAME_-_/primaryvirtualhost
+Type: string
+Default: *:80
+Description: Virtualhost the main site serves from:
+ If the site is on https only, this should be set to the ip & port dedicated to this site
+ For http-only, and mixed sites it is generally safest to leave this as *:80
+
+Template: _-_PACKAGENAME_-_/secondaryvirtualhost
+Type: string
+Default: 
+Description: Virtualhost https should be serving from:
+ This should be set to the ip & port dedicated to the https section of this site.
+
+Template: _-_PACKAGENAME_-_/primaryredirects
+Type: string
+Default:
+Description: Server redirects:
+ Comma separated list of domain names that the server should permanently
+ redirect to the primary site entry.
+ .
+ Note that this is just the domain name, so for "http://www.site.com" you only
+ need to enter "www.site.com"
+ The server will redirect any http requests addressed to the specified domains to
+ the site's primary virtualhost entry.
+
+Template: _-_PACKAGENAME_-_/primaryaliases
+Type: string
+Default:
+Description: Server ALIASES:
+ Comma separated list of domain names that the server should accept as ALIASES
+ for the site's primary virtualhost.
+ .
+ Note that this is just the domain name, so for "http://my.site.com" you only
+ need to enter "my.site.com".  These are not redirects.  ALIASES.
+
+Template: _-_PACKAGENAME_-_/siteenabled
+Type: boolean
+Default: true
+Description: Should the site should be brought online once configured?
+ If this is set to true, the package will attempt to enable the site once configured.
+
+Template: _-_PACKAGENAME_-_/staging
+Type: boolean
+Default: false
+Description: Is this a staging installation?
+ If this is set to true, a htpassd file will be created and the site won't be accessible without a username and password.
+
+Template: _-_PACKAGENAME_-_/stage_username
+Type: string
+Default: _-_SITENAME_-_
+Description: What username do you want to use for the htpasswd protection?
+
+Template: _-_PACKAGENAME_-_/stage_password
+Type: string
+Default:
+Description: What password do you want to use for the htpasswd protection?
+
+Template: _-_PACKAGENAME_-_/stage_file_exists
+Type: boolean
+Default: false
+Description: Do you want to overwrite the existing file?
+ It looks like there's already a htpasswd file for this installation.  If you choose yes, it will be overwritten.
+

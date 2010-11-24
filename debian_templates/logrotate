@@ -1,0 +1,14 @@
+/var/log/sitelogs/_-_PACKAGENAME_-_/access.log /var/log/sitelogs/_-_PACKAGENAME_-_/error.log {
+    daily
+    missingok 
+    rotate 366 
+    compress
+    delaycompress 
+    create 640 root adm 
+    sharedscripts 
+    postrotate 
+        if [ -f "`. /etc/apache2/envvars ; echo ${APACHE_PID_FILE:-/var/run/apache2.pid}`" ]; then 
+            /etc/init.d/apache2 reload > /dev/null 
+        fi 
+    endscript 
+} 

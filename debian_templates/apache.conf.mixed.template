@@ -1,0 +1,16 @@
+<VirtualHost __SECONDARYVIRTUALHOST__>
+    ServerName __SERVERNAME__
+    __ALIASES__
+
+    SSLEngine on
+    SSLCertificateFile    /etc/apache2/ssl/_-_PACKAGENAME_-_.crt
+    SSLCertificateKeyFile /etc/apache2/ssl/_-_PACKAGENAME_-_.key
+    SSLCertificateChainFile /etc/apache2/ssl/_-_PACKAGENAME_-_.chain
+
+    DocumentRoot _-_WWWROOT_-_
+
+    CustomLog /var/log/sitelogs/_-_PACKAGENAME_-_/access.log combined
+    ErrorLog  /var/log/sitelogs/_-_PACKAGENAME_-_/error.log
+
+    Include /etc/packaged-site/_-_PACKAGENAME_-_/apachedir
+</VirtualHost>

@@ -1,0 +1,7 @@
+Source: _-_PACKAGENAME_-_
+Section: web
+Priority: optional
+Maintainer: _-_FULLNAME_-_ <_-_EMAIL_-_>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+

@@ -1,0 +1,8 @@
+Package: _-_PACKAGENAME_-_-_-_APPNAME_-_
+Architecture: all
+Depends: ${misc:Depends} _-_DEPENDENCIES_-_
+Conflicts:
+Recommends:
+Suggests:
+Pre-Depends:
+Description:

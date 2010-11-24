@@ -1,0 +1,37 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# This has to be exported to make some magic below work.
+export DH_OPTIONS
+
+clean:
+	dh_testdir
+	dh_testroot
+	dh_clean 
+
+binary:
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs 
+	dh_installdocs
+	dh_installdebconf
+	dh_installcron
+	dh_installlogrotate
+	dh_compress 
+	dh_fixperms
+
+	dh_installdeb
+
+	dh_installdirs
+	dh_install
+
+	dh_link
+
+	dh_gencontrol
+	dh_md5sums
+
+	dh_builddeb
+
+.PHONY: build clean binary

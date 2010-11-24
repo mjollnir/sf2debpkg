@@ -1,0 +1,11 @@
+<VirtualHost __PRIMARYVIRTUALHOST__>
+    ServerName __SERVERNAME__
+    __ALIASES__
+
+    DocumentRoot _-_WWWROOT_-_
+
+    CustomLog /var/log/sitelogs/_-_PACKAGENAME_-_/access.log combined
+    ErrorLog  /var/log/sitelogs/_-_PACKAGENAME_-_/error.log
+
+    Include /etc/packaged-site/_-_PACKAGENAME_-_/apachedir
+</VirtualHost>

@@ -1,0 +1,8 @@
+etc/packaged-site/_-_PACKAGENAME_-_
+usr/share/packaged-site/_-_PACKAGENAME_-_
+_-_WWWROOTNS_-_
+_-_WWWROOTNS_-_/web
+_-_WWWROOTNS_-_/app
+_-_WWWROOTNS_-_/src
+var/log/sitelogs/_-_PACKAGENAME_-_
+var/lib/sitedata/_-_PACKAGENAME_-_

@@ -1,0 +1,34 @@
+<Directory _-_WWWROOT_-_>
+    Options -Indexes +Includes
+    XBitHack on
+    AllowOverride None
+
+    AddOutputFilter DEFLATE css
+
+    Header unset ETag
+    FileETag None
+
+    ExpiresActive on
+    # cache common graphics for 3 days
+    ExpiresByType image/jpg "access plus 3 days"
+    ExpiresByType image/gif "access plus 3 days"
+    ExpiresByType image/jpeg "access plus 3 days"
+    ExpiresByType image/png "access plus 3 days"
+
+    # Can afford to do this because we change the css name each time it changes:
+    ExpiresByType text/css "access plus 7 days"
+
+    ExpiresDefault "access plus 1 hours"
+
+    __HTPASSWD__
+
+</Directory>
+
+# if we have an injection into the apache settings
+# don't allow apache access to it
+<Location /special.appapachesettings>
+    Order deny,allow
+    deny from all
+</Location>
+
+Include /etc/packaged-site/_-_PACKAGENAME_-_/appapachesettings

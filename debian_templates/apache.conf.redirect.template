@@ -1,0 +1,6 @@
+<VirtualHost __PRIMARYVIRTUALHOST__>
+    ServerName __FIRSTREDIRECT__
+    ServerAlias __OTHERREDIRECTS__
+    RewriteEngine On
+    RewriteRule /(.*)   __SERVERURL__/$1 [R=permanent]
+</VirtualHost>

@@ -1,0 +1,57 @@
+function graceful_apache2 {
+    if (apache2ctl configtest >/dev/null 2>&1); then
+        echo -n "Config looks ok: "
+        if (/bin/ps -p `/bin/cat /var/run/apache2.pid 2>/dev/null` >/dev/null 2>&1); then
+            echo "Gracefully restarting apache2"
+            apache2ctl graceful
+            /bin/sleep 1
+            echo `(/bin/ps -A|/bin/grep apache2|/usr/bin/wc -l)` "apache2s running"
+        else
+            echo "Apache2 not running - not restarting"
+        fi
+    else
+        echo "apache2 configuration error ... not restarting"
+        echo ""
+        apache2ctl configtest
+        echo ""
+    fi
+}
+
+function check_ssl_files {
+    a2enmod ssl
+    if [ -e /etc/apache2/ssl/_-_PACKAGENAME_-_.key -a -e /etc/apache2/ssl/_-_PACKAGENAME_-_.crt -a -e /etc/apache2/ssl/_-_PACKAGENAME_-_.chain ]; then
+        # Properly configured scenario.
+        echo "All expected ssl files present - assuming config ok"
+        return 0;
+    fi
+    if [ ! -e /etc/apache2/ssl/_-_PACKAGENAME_-_.key -a ! -e /etc/apache2/ssl/_-_PACKAGENAME_-_.crt -a ! -e /etc/apache2/ssl/_-_PACKAGENAME_-_.chain ]; then
+        echo "SSL files don't seem to be present - generating key, self-signed cert and chain file automatically"
+        echo "This is usually suitable for staging and test sites"
+        mkdir -p /etc/apache2/ssl >/dev/null 2>&1
+        chown www-data:www-data /etc/apache2/ssl >/dev/null 2>&1
+        chmod 400 /etc/apache2/ssl >/dev/null 2>&1
+        echo "Creating key file:"
+        /usr/bin/openssl genrsa -out /etc/apache2/ssl/_-_PACKAGENAME_-_.key 1024
+        chown www-data:www-data /etc/apache2/ssl/_-_PACKAGENAME_-_.key >/dev/null 2>&1
+        chmod 400 /etc/apache2/ssl >/dev/null 2>&1
+
+        echo "Creating certification request - (using coarse input information)"
+        db_get _-_PACKAGENAME_-_/webroot
+        openssl req -new -key /etc/apache2/ssl/_-_PACKAGENAME_-_.key -out /etc/apache2/ssl/_-_PACKAGENAME_-_.csr -subj "/C=NZ/ST=Wellington/L=Wellington/CN=${RET}"
+        chown www-data:www-data /etc/apache2/ssl/_-_PACKAGENAME_-_.csr >/dev/null 2>&1
+
+        echo "Self-signing certificate"
+        openssl x509 -req -days 1096 -in /etc/apache2/ssl/_-_PACKAGENAME_-_.csr -signkey /etc/apache2/ssl/_-_PACKAGENAME_-_.key -out /etc/apache2/ssl/_-_PACKAGENAME_-_.crt
+    fi
+
+    if [ -e /etc/apache2/ssl/_-_PACKAGENAME_-_.key -a -e /etc/apache2/ssl/_-_PACKAGENAME_-_.crt -a ! -e /etc/apache2/ssl/_-_PACKAGENAME_-_.chain ]; then
+        # Key and certificate exist, but not chain file - have a rough go at creating it
+        echo "Creating a stub chain file from existing certificate file."
+        cp /etc/apache2/ssl/_-_PACKAGENAME_-_.crt /etc/apache2/ssl/_-_PACKAGENAME_-_.chain
+        return 0
+    fi
+
+    echo "SSL files in unexpected state";
+    return 1;
+}
+
