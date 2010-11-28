@@ -1,0 +1,47 @@
+
+        db_get _-_PACKAGENAME_-_/siteenabled
+        if [ "${RET}" == true ]; then
+            # We should enable all appropriate apache confs 
+            if [ -e $APACHE_CONF_PRIMARY_PATH ]; then
+                echo "enabling Apache2 primary conf file"
+                a2ensite $APACHE_CONF_PRIMARY_FILE >/dev/null 2>&1
+            fi
+            if [ -e $APACHE_CONF_SECONDARY_PATH ]; then
+                echo "enabling Apache2 secondary conf file"
+                a2ensite $APACHE_CONF_SECONDARY_FILE >/dev/null 2>&1
+
+            fi
+            if [ -e $APACHE_CONF_REDIRECT_PATH ]; then
+                echo "enabling Apache2 redirect conf file"
+                a2ensite $APACHE_CONF_REDIRECT_FILE >/dev/null 2>&1
+
+            fi
+            db_get _-_PACKAGENAME_-_/protocol
+            if [ "${RET}" != "httponly" ]; then
+                if ( check_ssl_files ); then
+                    graceful_apache2;
+                else
+                    echo "    ==============================";
+                    echo "    ==                          ==";
+                    echo "    ==  Not reloading apache2   ==";
+                    echo "    ==                          ==";
+                    echo "    ==============================";
+                    echo "Appropriate apache confs have been enabed.";
+                    echo "Unable to verify the existence of, or create appropriate ssl key, certificate and chain files"
+                    echo "Please check appropriate certificate, key, and chain files,"
+                    echo "Then run a configtest and graceful yourself"
+                fi
+            else
+                graceful_apache2;
+            fi
+        fi
+
+        echo ""
+        echo "The _-_SITENAME_-_ _-_SITETYPE_-_ is installed and configured for ${SERVERURL}"
+        echo ""
+        if [ "${staging:-}" = true ]; then
+            echo "Your staging access information is:"
+            echo "    username: $username";
+            echo "    password: $password";
+        fi
+

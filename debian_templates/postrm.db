@@ -1,0 +1,9 @@
+
+# postrm and config must check for the existance of this first
+# to be compliant with policy 7.2
+if [ -f /usr/share/dbconfig-common/dpkg/_-_DBCPREFIX_-_postrm ]; then
+  . /usr/share/dbconfig-common/dpkg/_-_DBCPREFIX_-_postrm
+
+  # Run dbconfig
+  dbc_go _-_PACKAGENAME_-_ $@
+fi

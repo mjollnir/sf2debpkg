@@ -1,7 +1,0 @@
-<?php
-$connection = pg_connect("dbname='__DBNAME__' user='__DBUSER__' password='__DBPASS__' host='__DBHOST__' port='__DBPORT__'");
-if (!$connection) {
-    exit(1);
-}
-exit(0);
-?>

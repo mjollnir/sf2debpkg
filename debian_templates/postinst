@@ -19,34 +19,19 @@ set -e
 #DEBHELPER#
 
 . /usr/share/debconf/confmodule
-. /usr/share/packaged-site/_-_PACKAGENAME_-_/confmodule
-. /usr/share/dbconfig-common/dpkg/postinst
 
 TMP_M4_FILE=/usr/share/packaged-site/_-_PACKAGENAME_-_/postinst.m4.tmp
-APACHE_CONF_REDIRECT_TEMPLATE=/usr/share/packaged-site/_-_PACKAGENAME_-_/apache.conf.redirect.template
-APACHE_CONF_REDIRECT_FILE=110-_-_PACKAGENAME_-_-100-redirects.conf
-APACHE_CONF_REDIRECT_PATH=/etc/apache2/sites-available/$APACHE_CONF_REDIRECT_FILE
 
-# Note that these do not line up 1:1 with the 'protocol' debconf question:
-# If you choose httpsonly, you'll get the httpsonly template as primary
-# If you choose httponly, you'll get the http template as primary
-# If you choose mixed, you'll get the http template as primary, the mixed template as secondary
-APACHE_CONF_HTTPSONLY_TEMPLATE=/usr/share/packaged-site/_-_PACKAGENAME_-_/apache.conf.httpsonly.template
-APACHE_CONF_HTTP_TEMPLATE=/usr/share/packaged-site/_-_PACKAGENAME_-_/apache.conf.http.template
-APACHE_CONF_MIXED_TEMPLATE=/usr/share/packaged-site/_-_PACKAGENAME_-_/apache.conf.mixed.template
-APACHE_CONF_SHARED_TEMPLATE=/usr/share/packaged-site/_-_PACKAGENAME_-_/apachedir.template
+DYNAMIC_CONF_TEMPLATE=/usr/share/packaged-site/_-_PACKAGENAME_-_/dynamic.yml.template
+DYNAMIC_CONF_TEMPLATE2=/usr/share/packaged-site/_-_PACKAGENAME_-_/dynamic.yml.template.2
+DYNAMIC_CONF_TEMPLATE3=/usr/share/packaged-site/_-_PACKAGENAME_-_/dynamic.yml.template.3
+DYNAMIC_CONF_PATH=/etc/packaged-site/_-_PACKAGENAME_-_/dynamic.yml
+DYNAMIC_CONF_WWWPATH=/var/www/_-_PACKAGENAME_-_/app/_-_APPNAME_-_/config/dynamic.yml
 
-APACHE_CONF_PRIMARY_FILE=110-_-_PACKAGENAME_-_-101-primary.conf
-APACHE_CONF_PRIMARY_PATH=/etc/apache2/sites-available/$APACHE_CONF_PRIMARY_FILE
-APACHE_CONF_SECONDARY_FILE=110-_-_PACKAGENAME_-_-102-secondary.conf
-APACHE_CONF_SECONDARY_PATH=/etc/apache2/sites-available/$APACHE_CONF_SECONDARY_FILE
-APACHE_CONF_SHARED_FILE=/etc/packaged-site/_-_PACKAGENAME_-_/apachedir
-APACHE_CONF_APP_HOOK_FILE=/etc/packaged-site/_-_PACKAGENAME_-_/appapachesettings
+__POSTINST.CONSTANTS.WEB__
+__POSTINST.CONSTANTS.DB__
 
 FIRSTTIMEINSTALL=0
-
-# This path is also in config, so if you change it, change it there too.
-APACHE_CONF_HTPASSWD_FILE=/etc/packaged-site/_-_PACKAGENAME_-_/htpassd
 
 case "$1" in
     configure)
@@ -54,199 +39,37 @@ case "$1" in
             FIRSTTIMEINSTALL=1
         fi
 
-        chown www-data:www-data /var/log/sitelogs/_-_PACKAGENAME_-_
-        # Enable a couple of modules we might need
-        /usr/sbin/a2enmod include >/dev/null 2>&1
-        /usr/sbin/a2enmod deflate >/dev/null 2>&1
-        /usr/sbin/a2enmod expires >/dev/null 2>&1
-        /usr/sbin/a2enmod headers >/dev/null 2>&1
-        /usr/sbin/a2enmod rewrite >/dev/null 2>&1
-
         # In the case that this file already exists, delete it first
         rm -f $TMP_M4_FILE
 
         # Build up the m4 templating file:
         touch $TMP_M4_FILE
-        db_get _-_PACKAGENAME_-_/webroot
-        echo "define(__SERVERNAME__,${RET})dnl" >> $TMP_M4_FILE
 
-        db_get _-_PACKAGENAME_-_/primaryvirtualhost
-        echo "define(__PRIMARYVIRTUALHOST__,${RET})dnl" >> $TMP_M4_FILE
 
-        db_get _-_PACKAGENAME_-_/protocol
-        if [ "${RET}" == "mixed" ]; then
-            db_get _-_PACKAGENAME_-_/secondaryvirtualhost
-            echo "define(__SECONDARYVIRTUALHOST__,${RET})dnl" >> $TMP_M4_FILE
+        __POSTINST.CONFIGURE.WEB__
+        __POSTINST.CONFIGURE.DB__
+
+        __POSTINST.CONFIGURE.DYNAMIC__
+
+
+        # before all the templating of dynamic.yml has been done,
+        # check to see if we have debconf values to append to the template
+
+        if [ -e $DYNAMIC_CONF_TEMPLATE2 ]; then
+            cat $DYNAMIC_CONF_TEMPLATE2 > $DYNAMIC_CONF_PATH;
+        fi
+        if [ -e $DYNAMIC_CONF_TEMPLATE3 ]; then
+            cat $DYNAMIC_CONF_TEMPLATE3 >> $DYNAMIC_CONF_PATH;
         fi
 
-        staging=false
-        db_get _-_PACKAGENAME_-_/stage_username
-        username=${RET};
-        db_get _-_PACKAGENAME_-_/stage_password
-        password=${RET};
-        if [ "${username}" ] && [ "${password}" ]; then
-            staging=true
-            HTPASSWD="$(cat <<_EOHC
-        AuthType Basic
-        AuthName "Restricted Resource"
-        AuthUserFile $APACHE_CONF_HTPASSWD_FILE
-        Require valid-user
-_EOHC
-            )"
-
-            htpasswd -bc $APACHE_CONF_HTPASSWD_FILE $username $password
-        else
-            HTPASSWD=''
-            if [ -f $APACHE_CONF_HTPASSWD_FILE ]; then
-                rm $APACHE_CONF_HTPASSWD_FILE;
-            fi
+        # link it from its final path into the symfony2 app config directory
+        if [[ ! -h $DYNAMIC_CONF_WWWPATH && -e $DYNAMIC_CONF_PATH ]]; then
+            ln -s $DYNAMIC_CONF_PATH $DYNAMIC_CONF_WWWPATH
         fi
 
-        if [ -e _-_WWWROOT_-_/special.appapachesettings ]; then
-            cp _-_WWWROOT_-_/special.appapachesettings  $APACHE_CONF_APP_HOOK_FILE
-        else
-            rm -f $APACHE_CONF_APP_HOOK_FILE # touch an empty one so apache doesn't complain
-            touch $APACHE_CONF_APP_HOOK_FILE # touch an empty one so apache doesn't complain
-        fi
-
-        echo "define(__HTPASSWD__,${HTPASSWD})dnl" >> $TMP_M4_FILE
-
-        db_get _-_PACKAGENAME_-_/protocol
-        if [ "${RET}" == "httpsonly" ]; then
-            db_get _-_PACKAGENAME_-_/webroot
-            SERVERURL="https://${RET}"
-            echo "define(__SERVERURL__,${SERVERURL})dnl" >> $TMP_M4_FILE
-        else
-            db_get _-_PACKAGENAME_-_/webroot
-            SERVERURL="http://${RET}"
-            echo "define(__SERVERURL__,${SERVERURL})dnl" >> $TMP_M4_FILE
-        fi
-
-        db_get _-_PACKAGENAME_-_/primaryredirects
-        if [ -n "${RET}" ]; then
-            REDIRECT="$(cat <<_EOHC
-        @s = split /s*,s*/;
-        \$s = shift @s;
-        print "define(__FIRSTREDIRECT__, \$s)dnl";
-        if (@s) {
-            print "define(__OTHERREDIRECTS__,", join(' ',@s), ')dnl';
-        }
-        else { print "define(__OTHERREDIRECTS__, \$s)dnl"; }
-_EOHC
-        )"
-            echo ${RET} | perl -nl -e "$REDIRECT" >> $TMP_M4_FILE
-            m4 $TMP_M4_FILE $APACHE_CONF_REDIRECT_TEMPLATE > $APACHE_CONF_REDIRECT_PATH
-        else
-            if [ -e $APACHE_CONF_REDIRECT_PATH ]; then
-                a2dissite $APACHE_CONF_REDIRECT_FILE >/dev/null 2>&1
-                rm $APACHE_CONF_REDIRECT_PATH >/dev/null 2>&1
-            fi
-        fi
-
-        db_get _-_PACKAGENAME_-_/primaryaliases
-        if [ -n "${RET}" ]; then
-            ALIAS="$(cat <<_EOHC
-        @s = split /s*,s*/;
-        if (@s) {
-            print "define(__ALIASES__,",'ServerAlias ' . join(' ',@s), ')dnl';
-        }
-        else { print "define(__ALIASES__,)dnl"; }
-_EOHC
-        )"
-            echo ${RET} | perl -nl -e "$ALIAS" >> $TMP_M4_FILE
-        else
-            echo "define(__ALIASES__,)dnl" >> $TMP_M4_FILE
-        fi
-
-        db_get _-_PACKAGENAME_-_/protocol
-        if [ "${RET}" == "httponly" ]; then
-            # Template the http conf file into place as primary
-            m4 $TMP_M4_FILE $APACHE_CONF_HTTP_TEMPLATE > $APACHE_CONF_PRIMARY_PATH
-            # Disable any secondary conf file
-            if [ -e $APACHE_CONF_SECONDARY_PATH ]; then
-                a2dissite $APACHE_CONF_SECONDARY_FILE >/dev/null 2>&1
-                rm $APACHE_CONF_SECONDARY_PATH >/dev/null 2>&1
-            fi
-        elif [ "${RET}" == "httpsonly" ]; then
-            # Template the https conf file into place as primary
-            m4 $TMP_M4_FILE $APACHE_CONF_HTTPSONLY_TEMPLATE > $APACHE_CONF_PRIMARY_PATH
-            # Disable any secondary conf file
-            if [ -e $APACHE_CONF_SECONDARY_PATH ]; then
-                a2dissite $APACHE_CONF_SECONDARY_FILE >/dev/null 2>&1
-                rm $APACHE_CONF_SECONDARY_PATH >/dev/null 2>&1
-            fi
-        else
-            # Template the http conf file into place as primary, and https in as secondary   
-            m4 $TMP_M4_FILE $APACHE_CONF_HTTP_TEMPLATE > $APACHE_CONF_PRIMARY_PATH
-            m4 $TMP_M4_FILE $APACHE_CONF_MIXED_TEMPLATE > $APACHE_CONF_SECONDARY_PATH
-        fi
-
-        # Now, template the shared config file
-        m4 $TMP_M4_FILE $APACHE_CONF_SHARED_TEMPLATE > $APACHE_CONF_SHARED_FILE
-
-        # give control over to dbconfig-common
-        dbc_go _-_PACKAGENAME_-_ $@
-
-        if [ $FIRSTTIMEINSTALL = 0 ] ; then
-            nowtime=`date +%Y-%m-%d-%H.%M`
-            if [ ! `dirname /var/tmp/$dbc_package` = /var/tmp ]; then
-                mkdir -p `dirname /var/tmp/$dbc_package`
-            fi
-            dumpfile=`mktemp /var/tmp/$dbc_package.$dbc_dbname.$nowtime.$dbc_dbtype.XXXXXX`
-            echo "Attempting to backup the database to  $dumpfile";
-            $dbc_dump_cmd $dumpfile || dbc_remove_error "dumping database"
-        fi
-
-        db_get _-_PACKAGENAME_-_/siteenabled
-        if [ "${RET}" == true ]; then
-            # We should enable all appropriate apache confs 
-            if [ -e $APACHE_CONF_PRIMARY_PATH ]; then
-                echo "enabling Apache2 primary conf file"
-                a2ensite $APACHE_CONF_PRIMARY_FILE >/dev/null 2>&1
-            fi
-            if [ -e $APACHE_CONF_SECONDARY_PATH ]; then
-                echo "enabling Apache2 secondary conf file"
-                a2ensite $APACHE_CONF_SECONDARY_FILE >/dev/null 2>&1
-
-            fi
-            if [ -e $APACHE_CONF_REDIRECT_PATH ]; then
-                echo "enabling Apache2 redirect conf file"
-                a2ensite $APACHE_CONF_REDIRECT_FILE >/dev/null 2>&1
-
-            fi
-            db_get _-_PACKAGENAME_-_/protocol
-            if [ "${RET}" != "httponly" ]; then
-                if ( check_ssl_files ); then
-                    graceful_apache2;
-                else
-                    echo "    ==============================";
-                    echo "    ==                          ==";
-                    echo "    ==  Not reloading apache2   ==";
-                    echo "    ==                          ==";
-                    echo "    ==============================";
-                    echo "Appropriate apache confs have been enabed.";
-                    echo "Unable to verify the existence of, or create appropriate ssl key, certificate and chain files"
-                    echo "Please check appropriate certificate, key, and chain files,"
-                    echo "Then run a configtest and graceful yourself"
-                fi
-            else
-                graceful_apache2;
-            fi
-        fi
-
-        echo ""
-        echo "The _-_SITENAME_-_ _-_SITETYPE_-_ is installed and configured for ${SERVERURL}"
-        echo ""
-        if [ "${staging:-}" = true ]; then
-            echo "Your staging access information is:"
-            echo "    username: $username";
-            echo "    password: $password";
-        fi
-
-        # TODO maybe clean up all the templates,
-        # but they're listed in debian/install, which is a bit weird
-        # rm -rf /usr/share/packaged-site/_-_PACKAGENAME_-_/
         rm -rf $TMP_M4_FILE;
+
+        __POSTINST.CONFIGURE.END.WEB__
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

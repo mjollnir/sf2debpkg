@@ -1,0 +1,5 @@
+
+. /usr/share/dbconfig-common/dpkg/prerm
+
+# Run dbconfig-common
+dbc_go _-_PACKAGENAME_-_ $@

@@ -1,0 +1,25 @@
+. /usr/share/packaged-site/_-_PACKAGENAME_-_/_-_PACKAGENAME_-_.confmodule
+
+APACHE_CONF_REDIRECT_TEMPLATE=/usr/share/packaged-site/_-_PACKAGENAME_-_/apache.conf.redirect.template
+APACHE_CONF_REDIRECT_FILE=110-_-_PACKAGENAME_-_-100-redirects.conf
+APACHE_CONF_REDIRECT_PATH=/etc/apache2/sites-available/$APACHE_CONF_REDIRECT_FILE
+
+# Note that these do not line up 1:1 with the 'protocol' debconf question:
+# If you choose httpsonly, you'll get the httpsonly template as primary
+# If you choose httponly, you'll get the http template as primary
+# If you choose mixed, you'll get the http template as primary, the mixed template as secondary
+APACHE_CONF_HTTPSONLY_TEMPLATE=/usr/share/packaged-site/_-_PACKAGENAME_-_/_-_PACKAGENAME_-_.apache.conf.httpsonly.template
+APACHE_CONF_HTTP_TEMPLATE=/usr/share/packaged-site/_-_PACKAGENAME_-_/_-_PACKAGENAME_-_.apache.conf.http.template
+APACHE_CONF_MIXED_TEMPLATE=/usr/share/packaged-site/_-_PACKAGENAME_-_/_-_PACKAGENAME_-_.apache.conf.mixed.template
+APACHE_CONF_SHARED_TEMPLATE=/usr/share/packaged-site/_-_PACKAGENAME_-_/_-_PACKAGENAME_-_.apachedir.template
+
+APACHE_CONF_PRIMARY_FILE=110-_-_PACKAGENAME_-_-101-primary.conf
+APACHE_CONF_PRIMARY_PATH=/etc/apache2/sites-available/$APACHE_CONF_PRIMARY_FILE
+APACHE_CONF_SECONDARY_FILE=110-_-_PACKAGENAME_-_-102-secondary.conf
+APACHE_CONF_SECONDARY_PATH=/etc/apache2/sites-available/$APACHE_CONF_SECONDARY_FILE
+APACHE_CONF_SHARED_FILE=/etc/packaged-site/_-_PACKAGENAME_-_/apachedir
+APACHE_CONF_APP_HOOK_FILE=/etc/packaged-site/_-_PACKAGENAME_-_/appapachesettings
+
+# This path is also in config, so if you change it, change it there too.
+APACHE_CONF_HTPASSWD_FILE=/etc/packaged-site/_-_PACKAGENAME_-_/htpassd
+

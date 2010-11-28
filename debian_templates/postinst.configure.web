@@ -1,0 +1,134 @@
+
+        chown www-data:www-data /var/log/sitelogs/_-_PACKAGENAME_-_
+        # Enable a couple of modules we might need
+        /usr/sbin/a2enmod include >/dev/null 2>&1
+        /usr/sbin/a2enmod deflate >/dev/null 2>&1
+        /usr/sbin/a2enmod expires >/dev/null 2>&1
+        /usr/sbin/a2enmod headers >/dev/null 2>&1
+        /usr/sbin/a2enmod rewrite >/dev/null 2>&1
+
+        db_get _-_PACKAGENAME_-_/webroot
+        echo "define(__SERVERNAME__,${RET})dnl" >> $TMP_M4_FILE
+
+        db_get _-_PACKAGENAME_-_/primaryvirtualhost
+        echo "define(__PRIMARYVIRTUALHOST__,${RET})dnl" >> $TMP_M4_FILE
+
+        db_get _-_PACKAGENAME_-_/protocol
+        if [ "${RET}" == "mixed" ]; then
+            db_get _-_PACKAGENAME_-_/secondaryvirtualhost
+            echo "define(__SECONDARYVIRTUALHOST__,${RET})dnl" >> $TMP_M4_FILE
+        fi
+
+        staging=false
+        db_get _-_PACKAGENAME_-_/stage_username
+        username=${RET};
+        db_get _-_PACKAGENAME_-_/stage_password
+        password=${RET};
+        if [ "${username}" ] && [ "${password}" ]; then
+            staging=true
+            HTPASSWD="$(cat <<_EOHC
+        AuthType Basic
+        AuthName "Restricted Resource"
+        AuthUserFile $APACHE_CONF_HTPASSWD_FILE
+        Require valid-user
+_EOHC
+            )"
+
+            htpasswd -bc $APACHE_CONF_HTPASSWD_FILE $username $password
+        else
+            HTPASSWD=''
+            if [ -f $APACHE_CONF_HTPASSWD_FILE ]; then
+                rm $APACHE_CONF_HTPASSWD_FILE;
+            fi
+        fi
+
+        if [ -e _-_WWWROOT_-_/app/_-_APPNAME_-_/config/apachesettings ]; then
+            cp _-_WWWROOT_-_/app/_-_APPNAME_-_/config/apachesettings  $APACHE_CONF_APP_HOOK_FILE
+        else
+            rm -f $APACHE_CONF_APP_HOOK_FILE # touch an empty one so apache doesn't complain
+            touch $APACHE_CONF_APP_HOOK_FILE # touch an empty one so apache doesn't complain
+        fi
+
+        echo "define(__HTPASSWD__,${HTPASSWD})dnl" >> $TMP_M4_FILE
+
+        db_get _-_PACKAGENAME_-_/protocol
+        if [ "${RET}" == "httpsonly" ]; then
+            db_get _-_PACKAGENAME_-_/webroot
+            SERVERURL="https://${RET}"
+            echo "define(__SERVERURL__,${SERVERURL})dnl" >> $TMP_M4_FILE
+        else
+            db_get _-_PACKAGENAME_-_/webroot
+            SERVERURL="http://${RET}"
+            echo "define(__SERVERURL__,${SERVERURL})dnl" >> $TMP_M4_FILE
+        fi
+
+        db_get _-_PACKAGENAME_-_/primaryredirects
+        if [ -n "${RET}" ]; then
+            REDIRECT="$(cat <<_EOHC
+        @s = split /s*,s*/;
+        \$s = shift @s;
+        print "define(__FIRSTREDIRECT__, \$s)dnl";
+        if (@s) {
+            print "define(__OTHERREDIRECTS__,", join(' ',@s), ')dnl';
+        }
+        else { print "define(__OTHERREDIRECTS__, \$s)dnl"; }
+_EOHC
+        )"
+            echo ${RET} | perl -nl -e "$REDIRECT" >> $TMP_M4_FILE
+            m4 $TMP_M4_FILE $APACHE_CONF_REDIRECT_TEMPLATE > $APACHE_CONF_REDIRECT_PATH
+        else
+            if [ -e $APACHE_CONF_REDIRECT_PATH ]; then
+                a2dissite $APACHE_CONF_REDIRECT_FILE >/dev/null 2>&1
+                rm $APACHE_CONF_REDIRECT_PATH >/dev/null 2>&1
+            fi
+        fi
+
+        db_get _-_PACKAGENAME_-_/primaryaliases
+        if [ -n "${RET}" ]; then
+            ALIAS="$(cat <<_EOHC
+        @s = split /s*,s*/;
+        if (@s) {
+            print "define(__ALIASES__,",'ServerAlias ' . join(' ',@s), ')dnl';
+        }
+        else { print "define(__ALIASES__,)dnl"; }
+_EOHC
+        )"
+            echo ${RET} | perl -nl -e "$ALIAS" >> $TMP_M4_FILE
+        else
+            echo "define(__ALIASES__,)dnl" >> $TMP_M4_FILE
+        fi
+
+        db_get _-_PACKAGENAME_-_/protocol
+        if [ "${RET}" == "httponly" ]; then
+            # Template the http conf file into place as primary
+            m4 $TMP_M4_FILE $APACHE_CONF_HTTP_TEMPLATE > $APACHE_CONF_PRIMARY_PATH
+            # Disable any secondary conf file
+            if [ -e $APACHE_CONF_SECONDARY_PATH ]; then
+                a2dissite $APACHE_CONF_SECONDARY_FILE >/dev/null 2>&1
+                rm $APACHE_CONF_SECONDARY_PATH >/dev/null 2>&1
+            fi
+        elif [ "${RET}" == "httpsonly" ]; then
+            # Template the https conf file into place as primary
+            m4 $TMP_M4_FILE $APACHE_CONF_HTTPSONLY_TEMPLATE > $APACHE_CONF_PRIMARY_PATH
+            # Disable any secondary conf file
+            if [ -e $APACHE_CONF_SECONDARY_PATH ]; then
+                a2dissite $APACHE_CONF_SECONDARY_FILE >/dev/null 2>&1
+                rm $APACHE_CONF_SECONDARY_PATH >/dev/null 2>&1
+            fi
+        else
+            # Template the http conf file into place as primary, and https in as secondary   
+            m4 $TMP_M4_FILE $APACHE_CONF_HTTP_TEMPLATE > $APACHE_CONF_PRIMARY_PATH
+            m4 $TMP_M4_FILE $APACHE_CONF_MIXED_TEMPLATE > $APACHE_CONF_SECONDARY_PATH
+        fi
+
+        # Now, template the shared config file
+        m4 $TMP_M4_FILE $APACHE_CONF_SHARED_TEMPLATE > $APACHE_CONF_SHARED_FILE
+
+        # make sure the webserver can write to the app cache and logs
+        if [ -e  _-_WWWROOT_-_/app/_-_APPNAME_-_/cache ]; then
+            rm -rf _-_WWWROOT_-_/app/_-_APPNAME_-_/cache/* #clear it #TODO replace this with app/APP/console
+            chown -R www-data _-_WWWROOT_-_/app/_-_APPNAME_-_/cache
+        fi
+        if [ -e  _-_WWWROOT_-_/app/_-_APPNAME_-_/logs ]; then
+            chown -R www-data _-_WWWROOT_-_/app/_-_APPNAME_-_/logs
+        fi

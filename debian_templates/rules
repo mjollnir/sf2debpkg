@@ -25,7 +25,13 @@ binary:
 	dh_installdeb
 
 	dh_installdirs
-	dh_install
+	dh_install --exclude=web/.htaccess
+
+	_-_RENAMEFILES_-_
+
+	rm -rf $(CURDIR)/debian/_-_PACKAGENAME_-_-*/var/www/_-_PACKAGENAME_-_-*/app/*/cache/*
+	rm -rf $(CURDIR)/debian/_-_PACKAGENAME_-_-*/var/www/_-_PACKAGENAME_-_-*/app/*/logs/*
+	rm -rf $(CURDIR)/debian/_-_PACKAGENAME_-_-*/var/www/_-_PACKAGENAME_-_-*/app/*/config/dynamic.yml
 
 	dh_link
 

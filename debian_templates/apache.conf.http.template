@@ -2,7 +2,7 @@
     ServerName __SERVERNAME__
     __ALIASES__
 
-    DocumentRoot _-_WWWROOT_-_
+    DocumentRoot _-_WWWROOT_-_/web/_-_DOCROOTSUBDIR_-_
 
     CustomLog /var/log/sitelogs/_-_PACKAGENAME_-_/access.log combined
     ErrorLog  /var/log/sitelogs/_-_PACKAGENAME_-_/error.log

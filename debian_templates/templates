@@ -80,3 +80,12 @@ Default: false
 Description: Do you want to overwrite the existing file?
  It looks like there's already a htpasswd file for this installation.  If you choose yes, it will be overwritten.
 
+Template: _-_PACKAGENAME_-_/dynamicconfig
+Type: string
+Default:
+Description: dynamic.yml config options
+ Comma separated list of key=value pairs to place into the application's dynamic.yml file.
+ The key will be prefixed with 'dynamic.'
+ .
+ Example: assets_base_urls=http://static.yoursite.com/, otherkey=othervalue
+

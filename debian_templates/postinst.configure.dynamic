@@ -1,0 +1,17 @@
+
+        db_get _-_PACKAGENAME_-_/dynamicconfig
+        if [ -n "${RET}" ]; then
+            CONFIG="$(cat <<_EOHC
+        @s = split /\s*,\s*/, <>;
+        if (@s) {
+            foreach my \$s (@s) {
+                my (\$k, \$v) = split /\s*=\s*/, \$s;
+                \$k =~ s/^\s?(.*?)\s?$/\$1/;
+                \$v =~ s/^\s?(.*?)\s?$/\$1/;
+                print "    dynamic.\$k: \$v\n";
+            }
+        }
+_EOHC
+        )"
+            echo "${RET}" | perl -e "$CONFIG" > $DYNAMIC_CONF_TEMPLATE3;
+        fi

@@ -1,0 +1,9 @@
+# postrm and config must check for the existance of this first
+# to be compliant with policy 7.2
+if [ -f /usr/share/dbconfig-common/dpkg/_-_DBCPREFIX_-_config ]; then
+	dbc_dbtypes="_-_DBTYPES_-_"
+	dbc_authmethod_user="password"
+	. /usr/share/dbconfig-common/dpkg/_-_DBCPREFIX_-_config
+	dbc_go _-_PACKAGENAME_-_ $@
+fi
+

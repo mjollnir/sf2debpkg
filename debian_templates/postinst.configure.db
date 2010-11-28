@@ -1,0 +1,18 @@
+        # give control over to dbconfig-common
+        dbc_go _-_PACKAGENAME_-_ $@
+
+#        if [ $FIRSTTIMEINSTALL = 0 ] ; then
+#            nowtime=`date +%Y-%m-%d-%H.%M`
+#            if [ ! `dirname /var/tmp/$dbc_package` = /var/tmp ]; then
+#                mkdir -p `dirname /var/tmp/$dbc_package`
+#            fi
+#            dumpfile=`mktemp /var/tmp/$dbc_package.$dbc_dbname.$nowtime.$dbc_dbtype.XXXXXX`
+#            echo "Attempting to backup the database to  $dumpfile";
+#            $dbc_dump_cmd $dumpfile || dbc_remove_error "dumping database"
+#        fi
+
+
+# make sure we take out invalid values from dbconfig common
+        sed -i 's/pgsql/PDOPgSql/' $DYNAMIC_CONF_TEMPLATE2;
+
+

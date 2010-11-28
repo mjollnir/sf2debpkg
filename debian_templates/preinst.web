@@ -1,0 +1,9 @@
+
+        db_get _-_PACKAGENAME_-_/webroot
+        if [ -z "$RET" ];then
+            echo "You must specify a webroot"
+            db_reset _-_PACKAGENAME_-_/webroot
+            exit 1;
+        fi
+        hostname -f 2>&1 > /dev/null || { echo "Hostname seems broken. Aborting" >&2; exit 1; }
+

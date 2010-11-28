@@ -17,27 +17,19 @@ set -e
 # the debian-policy package
 
 . /usr/share/debconf/confmodule
-. /usr/share/dbconfig-common/dpkg/prerm
-. /usr/share/packaged-site/_-_PACKAGENAME_-_/confmodule
 
-# Run dbconfig-common
-dbc_go _-_PACKAGENAME_-_ $@
+__PRERM.DB__
 
 case "$1" in
     remove|deconfigure)
-        rm -f /etc/apache2/sites-enabled/110-_-_PACKAGENAME_-_-100-redirects.conf
-        rm -f /etc/apache2/sites-available/110-_-_PACKAGENAME_-_-100-redirects.conf
 
-        rm -f /etc/apache2/sites-enabled/110-_-_PACKAGENAME_-_-101-primary.conf
-        rm -f /etc/apache2/sites-available/110-_-_PACKAGENAME_-_-101-primary.conf
+    rm -f /etc/packaged-site/_-_PACKAGENAME_-_/dynamic.yml
+    rm -f /var/www/_-_PACKAGENAME_-_/app/_-_APPNAME_-_/config/dynamic.yml
+    rm -f /var/www/_-_PACKAGENAME_-_/app/_-_APPNAME_-_/config/dynamic.yml.2
+    rm -f /var/www/_-_PACKAGENAME_-_/app/_-_APPNAME_-_/config/dynamic.yml.3
 
-        rm -f /etc/apache2/sites-enabled/110-_-_PACKAGENAME_-_-102-secondary.conf
-        rm -f /etc/apache2/sites-available/110-_-_PACKAGENAME_-_-102-secondary.conf
+__PRERM.WEB__
 
-        rm -f /etc/packaged-site/_-_PACKAGENAME_-_/apachedir
-        rm -f /etc/packaged-site/_-_PACKAGENAME_-_/htpassd
-
-        graceful_apache2;
     ;;
     upgrade)
     ;;

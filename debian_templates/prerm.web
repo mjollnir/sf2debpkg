@@ -1,0 +1,17 @@
+
+        . /usr/share/packaged-site/_-_PACKAGENAME_-_/_-_PACKAGENAME_-_.confmodule
+
+        rm -f /etc/apache2/sites-enabled/110-_-_PACKAGENAME_-_-100-redirects.conf
+        rm -f /etc/apache2/sites-available/110-_-_PACKAGENAME_-_-100-redirects.conf
+
+        rm -f /etc/apache2/sites-enabled/110-_-_PACKAGENAME_-_-101-primary.conf
+        rm -f /etc/apache2/sites-available/110-_-_PACKAGENAME_-_-101-primary.conf
+
+        rm -f /etc/apache2/sites-enabled/110-_-_PACKAGENAME_-_-102-secondary.conf
+        rm -f /etc/apache2/sites-available/110-_-_PACKAGENAME_-_-102-secondary.conf
+
+        rm -f /etc/packaged-site/_-_PACKAGENAME_-_/apachedir
+        rm -f /etc/packaged-site/_-_PACKAGENAME_-_/appapachesettings
+        rm -f /etc/packaged-site/_-_PACKAGENAME_-_/htpassd
+
+        graceful_apache2;

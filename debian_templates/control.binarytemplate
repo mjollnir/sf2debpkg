@@ -1,8 +1,9 @@
-Package: _-_PACKAGENAME_-_-_-_APPNAME_-_
+Package: _-_PACKAGENAME_-_
 Architecture: all
-Depends: ${misc:Depends} _-_DEPENDENCIES_-_
-Conflicts:
-Recommends:
-Suggests:
-Pre-Depends:
-Description:
+Depends: ${misc:Depends}, _-_DEPENDENCIES_-_
+Conflicts: _-_CONFLICTS_-_
+Recommends: _-_RECOMMENDS_-_
+Suggests: _-_SUGGESTS_-_
+Pre-Depends: m4, _-_PREDEPENDS_-_
+Description: _-_DESCRIPTION_-_
+

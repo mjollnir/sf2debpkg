@@ -1,4 +1,4 @@
-<Directory _-_WWWROOT_-_>
+<Directory _-_WWWROOT_-_/web/_-_DOCROOTSUBDIR_-_>
     Options -Indexes +Includes
     XBitHack on
     AllowOverride None

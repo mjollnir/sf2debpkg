@@ -1,0 +1,68 @@
+db_input $PRIORITY _-_PACKAGENAME_-_/webroot || true
+db_go
+
+db_input $PRIORITY _-_PACKAGENAME_-_/protocol || true
+db_go
+
+db_input $PRIORITY _-_PACKAGENAME_-_/primaryvirtualhost || true
+db_go
+
+db_get _-_PACKAGENAME_-_/protocol
+if [ "${RET}" = 'mixed' ]; then
+    db_input $PRIORITY _-_PACKAGENAME_-_/secondaryvirtualhost || true
+    db_go
+else
+    db_reset _-_PACKAGENAME_-_/secondaryvirtualhost
+fi
+
+db_input $PRIORITY _-_PACKAGENAME_-_/primaryredirects || true
+db_go
+
+db_input $PRIORITY _-_PACKAGENAME_-_/primaryaliases || true
+db_go
+
+db_input $PRIORITY _-_PACKAGENAME_-_/siteenabled || true
+db_go
+
+db_input $PRIORITY _-_PACKAGENAME_-_/staging || true
+db_go
+
+db_get _-_PACKAGENAME_-_/staging
+if [ "${RET}" = true ]; then
+    safe=1
+    if [ -f /etc/packaged-site/_-_PACKAGENAME_-_/htpassd ]; then
+        db_input $PRIORITY _-_PACKAGENAME_-_/stage_file_exists || true
+        db_go
+
+        db_get _-_PACKAGENAME_-_/stage_file_exists
+        if [ "${RET}" = false ]; then
+            safe=0
+        fi
+    fi
+    if [ $safe = 1 ]; then
+        ok=''
+        while [ ! "$ok" ]; do
+            db_input $PRIORITY _-_PACKAGENAME_-_/stage_username || true
+            db_go || true
+
+            db_get _-_PACKAGENAME_-_/stage_username
+            if [ "$RET" ]; then
+                ok=1
+            fi
+        done
+
+        ok=''
+        while [ ! "$ok" ]; do
+            db_input $PRIORITY _-_PACKAGENAME_-_/stage_password || true
+            db_go || true
+
+            db_get _-_PACKAGENAME_-_/stage_password
+            if [ "$RET" ]; then
+                ok=1
+            fi
+        done
+    fi
+else
+    db_reset _-_PACKAGENAME_-_/stage_username
+    db_reset _-_PACKAGENAME_-_/stage_password
+fi
