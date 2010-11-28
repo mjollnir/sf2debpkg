@@ -25,7 +25,7 @@ binary:
 	dh_installdeb
 
 	dh_installdirs
-	dh_install --exclude=web/.htaccess
+	dh_install --exclude=web/.htaccess --exclude=**/.git
 
 	_-_RENAMEFILES_-_
 
