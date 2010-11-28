@@ -24,11 +24,4 @@
 
 </Directory>
 
-# if we have an injection into the apache settings
-# don't allow apache access to it
-<Location /special.appapachesettings>
-    Order deny,allow
-    deny from all
-</Location>
-
 Include /etc/packaged-site/_-_PACKAGENAME_-_/appapachesettings
