@@ -1,5 +1,5 @@
 ## Doctrine Configuration
-dynamic.doctrine.dbal:
+doctrine.dbal:
     driver:   _DBC_DBTYPE_
     dbname:   _DBC_DBNAME_
     user:     _DBC_DBUSER_
