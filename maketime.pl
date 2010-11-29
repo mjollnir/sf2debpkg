@@ -282,7 +282,8 @@ sub create_installfile {
 
     # if we are using a dynamic.yml file, copy the one from the debian templates
     # these should NOT get out of sync!
-    if  ( -e 'app/' . $appname . '/config/dynamic.yml') {
+    my $isstatic = wants_profile($apps->{$appname}, 'static');
+    unless ($isstatic) {
         $installfile .= sprintf("%-30s %s\n",
                     "packaging/debian_templates/dynamic.yml.template",
                     "usr/share/packaged-site/$destination/");
