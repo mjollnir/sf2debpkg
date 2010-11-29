@@ -93,7 +93,7 @@ foreach my $appname (@appnames) {
         foreach my $command (keys %{$apps->{$appname}->{cron}}) {
             $scheduling = $apps->{$appname}->{cron}->{$command};
             my $wwwroot = safe_wwwroot($config, $appname, 1);
-            $cron_data.= "$scheduling www-data cd $wwwroot-$appname && php app/$appname/console $command\n";
+            $cron_data.= "$scheduling www-data cd $wwwroot && php app/$appname/console $command\n";
         }
         write_file("$destprefix.cron.d", $cron_data);
     }
