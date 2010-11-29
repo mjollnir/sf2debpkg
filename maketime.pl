@@ -256,7 +256,7 @@ sub create_installfile {
     if ($app->{bundles}) {
         foreach my $bundle (@{$app->{bundles}}) {
             my ($filename, $directories) = fileparse($bundle);
-            $installfile .= sprintf("%-30s %s\n", $bundle, "$safewwwroot/$directories");
+            $installfile .= sprintf("%-30s %s\n", $bundle, $safewwwroot . "$directories");
         }
     }
 
@@ -264,7 +264,7 @@ sub create_installfile {
     if ($app->{installfiles}) {
         foreach my $file (@{$app->{installfiles}}) {
             my ($filename, $directories) = fileparse($file);
-            $installfile .= sprintf("%-30s %s\n", $file, "$safewwwroot/$directories");
+            $installfile .= sprintf("%-30s %s\n", $file, $safewwwroot . "$directories");
         }
     }
 
