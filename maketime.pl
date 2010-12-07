@@ -124,12 +124,34 @@ foreach my $appname (@appnames) {
     my $postinstconfiguredb = $wantsdb ?  template_file_string(TEMPLATE_DIR . 'postinst.configure.db', $config, $appname) : '';
     my $postinstconfiguredynamic = !$isstatic ?  template_file_string(TEMPLATE_DIR . 'postinst.configure.dynamic', $config, $appname) : '';
 
+    my $postinstconfigureenddb = '';
+
+    if ($wantsdb && $apps->{$appname}->{dbconfig}->{postinst}) {
+        my $pi = $apps->{$appname}->{dbconfig}->{postinst};
+        $postinstconfigureenddb .= "pushd .\n        cd _-_WWWROOT_-_\n";
+        if (ref $pi eq 'ARRAY') {
+            $postinstconfigureenddb .= '       {';
+            foreach my $command (@{$pi}) {
+                $postinstconfigureenddb .= "       app/_-_APPNAME_-_/console $command &&";
+            }
+            $postinstconfigureenddb =~ s/&&$/; }/;
+            $postinstconfigureenddb .= ' || echo "Sorry, could not execute your postinst commands: ' .
+                join(', ', @$pi) . '"';
+        } else {
+            $postinstconfigureenddb .= '        app/_-_APPNAME_-_/console ' .  $pi .
+                ' || echo "Sorry, could not execute your postinst commands: ' . $postinstconfigureenddb . '"';
+        }
+        $postinstconfigureenddb .= "\npopd";
+        $postinstconfigureenddb = template_string_string($postinstconfigureenddb, $config, $appname);
+    }
+
     $postinst =~ s/__POSTINST.CONSTANTS.WEB__/$postinstconstantsweb/;
     $postinst =~ s/__POSTINST.CONSTANTS.DB__/$postinstconstantsdb/;
     $postinst =~ s/__POSTINST.CONFIGURE.WEB__/$postinstconfigureweb/;
     $postinst =~ s/__POSTINST.CONFIGURE.DB__/$postinstconfiguredb/;
     $postinst =~ s/__POSTINST.CONFIGURE.DYNAMIC__/$postinstconfiguredynamic/;
     $postinst =~ s/__POSTINST.CONFIGURE.END.WEB__/$postinstconfigureendweb/;
+    $postinst =~ s/__POSTINST.CONFIGURE.END.DB__/$postinstconfigureenddb/;
 
     write_file($destprefix . '.postinst', $postinst);
 
@@ -205,6 +227,13 @@ sub template_file {
 sub template_file_string {
     my ($infile, $subst, $appname) = @_;
     my $data = read_file($infile);
+
+    return template_string_string($data, $subst, $appname);
+}
+
+# helper function that actually does the templating
+sub template_string_string {
+    my ($data, $subst, $appname) = @_;
     my $key;
     if ($appname) {
         $subst->{APPNAME} = $appname;

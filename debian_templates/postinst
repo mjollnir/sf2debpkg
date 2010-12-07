@@ -69,6 +69,7 @@ case "$1" in
 
         rm -rf $TMP_M4_FILE;
 
+        __POSTINST.CONFIGURE.END.DB__
         __POSTINST.CONFIGURE.END.WEB__
     ;;
 
