@@ -25,20 +25,17 @@ binary:
 	dh_installdeb
 
 	dh_installdirs
-	#TODO this doesn't seem to work all the time - the first two work though
-	dh_install \
-		--exclude=web/.htaccess \
-		--exclude=**/.git \
-		--exclude=src/vendor/zend/tests \
-		--exclude=src/vendor/doctrine-migrations/tests/ \
-		--exclude=src/vendor/swiftmailer/tests \
-		--exclude=src/vendor/swiftmailer/docs \
-		--exclude=src/vendor/swiftmailer/notes \
-		--exclude=src/vendor/swiftmailer/test-suite/ \
-		--exclude=src/vendor/symfony/tests/ \
-		--exclude=src/vendor/symfony/src/Symfony/Bundle/DoctrineMongoDBBundle/Tests \
-		--exclude=src/vendor/zend/documentation
 
+	dh_install \
+		--exclude=/.htaccess \
+		--exclude=/.git/ \
+		--exclude=/tests/ \
+		--exclude=/doc/ \
+		--exclude=/docs/ \
+		--exclude=/notes/ \
+		--exclude=/test-suite/ \
+		--exclude=/Tests/ \
+		--exclude=/documentation/ \
 
 	_-_RENAMEFILES_-_
 
