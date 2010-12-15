@@ -44,6 +44,11 @@ _EOHC
 
         if [ -e _-_WWWROOT_-_/app/_-_APPNAME_-_/config/apachesettings ]; then
             cp _-_WWWROOT_-_/app/_-_APPNAME_-_/config/apachesettings  $APACHE_CONF_APP_HOOK_FILE
+            perl -pi -e "\$repl = q($APACHE_S2_DEFAULT_REWRITE); s/__APACHE_DEFAULT_REWRITE__/\$repl/" $APACHE_CONF_APP_HOOK_FILE
+            sed -i 's/\\n/\n/g' $APACHE_CONF_APP_HOOK_FILE
+
+        elif [ -n "__IS_S2_APP__" ]; then # this is templated at make time
+            echo -e $APACHE_S2_DEFAULT_REWRITE > $APACHE_CONF_APP_HOOK_FILE;
         else
             rm -f $APACHE_CONF_APP_HOOK_FILE # touch an empty one so apache doesn't complain
             touch $APACHE_CONF_APP_HOOK_FILE # touch an empty one so apache doesn't complain

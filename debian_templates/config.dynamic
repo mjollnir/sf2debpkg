@@ -1,4 +1,0 @@
-db_input $PRIORITY _-_PACKAGENAME_-_/dynamicconfig || true
-db_go
-
-

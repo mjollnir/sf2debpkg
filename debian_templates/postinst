@@ -22,9 +22,11 @@ set -e
 
 TMP_M4_FILE=/usr/share/packaged-site/_-_PACKAGENAME_-_/postinst.m4.tmp
 
-DYNAMIC_CONF_TEMPLATE=/usr/share/packaged-site/_-_PACKAGENAME_-_/dynamic.yml.template
+# installed by the package
+DYNAMIC_CONF_TEMPLATE=/usr/share/packaged-site/_-_PACKAGENAME_-_/_-_PACKAGENAME_-_.dynamic.yml.template
+# written to by m4 for our dynamic param handling
+# hand then written to by dbconfigcommon
 DYNAMIC_CONF_TEMPLATE2=/usr/share/packaged-site/_-_PACKAGENAME_-_/dynamic.yml.template.2
-DYNAMIC_CONF_TEMPLATE3=/usr/share/packaged-site/_-_PACKAGENAME_-_/dynamic.yml.template.3
 DYNAMIC_CONF_PATH=/etc/packaged-site/_-_PACKAGENAME_-_/dynamic.yml
 DYNAMIC_CONF_WWWPATH=/var/www/_-_PACKAGENAME_-_/app/_-_APPNAME_-_/config/dynamic.yml
 
@@ -52,15 +54,12 @@ case "$1" in
         __POSTINST.CONFIGURE.DYNAMIC__
 
 
-        # before all the templating of dynamic.yml has been done,
-        # check to see if we have debconf values to append to the template
-
         if [ -e $DYNAMIC_CONF_TEMPLATE2 ]; then
-            cat $DYNAMIC_CONF_TEMPLATE2 > $DYNAMIC_CONF_PATH;
+            m4 $TMP_M4_FILE  $DYNAMIC_CONF_TEMPLATE2 > $DYNAMIC_CONF_PATH;
+        elif [ -e $DYNAMIC_CONF_TEMPLATE ]; then
+            m4 $TMP_M4_FILE  $DYNAMIC_CONF_TEMPLATE > $DYNAMIC_CONF_PATH;
         fi
-        if [ -e $DYNAMIC_CONF_TEMPLATE3 ]; then
-            cat $DYNAMIC_CONF_TEMPLATE3 >> $DYNAMIC_CONF_PATH;
-        fi
+
 
         # link it from its final path into the symfony2 app config directory
         if [[ ! -h $DYNAMIC_CONF_WWWPATH && -e $DYNAMIC_CONF_PATH ]]; then

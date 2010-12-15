@@ -19,6 +19,7 @@ set -e
 case "$1" in
     install)
         __PREINST.WEB__
+        __PREINST.DB__
     ;;
     upgrade)
     ;;

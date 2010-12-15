@@ -22,4 +22,5 @@ APACHE_CONF_APP_HOOK_FILE=/etc/packaged-site/_-_PACKAGENAME_-_/appapachesettings
 
 # This path is also in config, so if you change it, change it there too.
 APACHE_CONF_HTPASSWD_FILE=/etc/packaged-site/_-_PACKAGENAME_-_/htpassd
+APACHE_S2_DEFAULT_REWRITE="RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteRule ^(.*)$ /index.php [QSA,L]\n";
 

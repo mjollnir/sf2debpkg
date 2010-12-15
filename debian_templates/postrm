@@ -26,6 +26,7 @@ __POSTRM.DB__
 
 case "$1" in
     purge)
+        __POSTRM.PURGE.DB__
     ;;
     remove)
     ;;

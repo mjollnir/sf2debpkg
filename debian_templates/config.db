@@ -1,6 +1,9 @@
 # postrm and config must check for the existance of this first
 # to be compliant with policy 7.2
 if [ -f /usr/share/dbconfig-common/dpkg/_-_DBCPREFIX_-_config ]; then
+    # Hint more sensible defaults to dbconfig-common for dbname and dbuser
+    dbc_dbuser=_-_SITENAME_-_
+    dbc_dbname=_-_SITENAME_-_
 	dbc_dbtypes="_-_DBTYPES_-_"
 	dbc_authmethod_user="password"
 	. /usr/share/dbconfig-common/dpkg/_-_DBCPREFIX_-_config

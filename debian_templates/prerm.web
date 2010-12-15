@@ -14,4 +14,6 @@
         rm -f /etc/packaged-site/_-_PACKAGENAME_-_/appapachesettings
         rm -f /etc/packaged-site/_-_PACKAGENAME_-_/htpassd
 
+        rm -fr /var/www/_-_PACKAGENAME_-_/app/_-_APPNAME_-_/cache/
+
         graceful_apache2;

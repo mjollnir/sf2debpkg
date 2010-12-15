@@ -1,0 +1,6 @@
+
+        debconf=$(debconf-show debconf | grep priority | cut -d: -f2| sed 's/[^a-z]//g');
+        if [ -n "$DEBIAN_PRIORITY" ]; then
+            debconf=$DEBIAN_PRIORITY;
+        fi
+        [ $debconf="low" ] || { echo "Debian priority MUST be set to low (dpkg-reconfigure debconf or export \$DEBIAN_PRIORITY=low)" >&2; exit 1; }
