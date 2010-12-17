@@ -36,6 +36,7 @@ binary:
 		--exclude=/test-suite/ \
 		--exclude=/Tests/ \
 		--exclude=/documentation/ \
+		--exclude=console_dev
 
 	_-_RENAMEFILES_-_
 
