@@ -1,0 +1,66 @@
+constants:
+    database: &database
+        'php5-pgsql': ~
+        'postgresql-client': ~
+    web: &web
+        'php5': '>=5.3.0'
+        'libapache2-mod-php5': ~
+        'php5-curl': ~
+
+project:
+    projectname: yourproject
+    maintainername: 'Your Team Name'
+    maintaineremail: 'you@email.com'
+
+apps:
+    main:
+        frontend: main.php
+        description: 'Main website'
+        dependencies:
+           << : [ *database, *web ]
+        conflicts: ~
+        recommends: ~
+        suggests: ~
+        predepends: ~
+        cron:
+            #'another:console:command': "0-5/2 * * * *"
+        bundles:
+            - 'src/vendor/symfony'
+            - 'src/vendor/zend/library/Zend/Log'
+            - 'src/vendor/swiftmailer'
+            - 'src/vendor/doctrine'
+            - 'src/vendor/doctrine-migrations'
+            - 'src/vendor/doctrine-dbal'
+            - 'src/vendor/doctrine-common'
+            - 'src/vendor/twig'
+            - 'src/Application/YourBundle'
+        assets: ~
+        profiles:
+            - 'web'
+            - 'db'
+        dbconfig:
+            dbtypes: pgsql
+            create: false
+            postinst:
+                - 'doctrine:schema:drop --force'
+                - 'doctrine:schema:create'
+        installfiles:
+            - 'app/main'
+            - 'src/autoload.php'
+    static:
+        description: 'All static content for JOIZ websites'
+        prebuild:
+            - 'app/main/console assets:install web'
+            - 'mkdir -p web/css'
+            #- 'dev/less/getcss.sh main > web/css/main.css'
+        dependencies:
+            <<: *web
+        bundles: ~
+        assets:
+            - 'web/bundles/'
+            - 'web/css/'
+        profiles:
+            - 'web'
+            - 'static'
+        installfiles:
+            - 'app/static'
