@@ -89,7 +89,7 @@ $helper->template_file('rules', 'debian/rules', \%globalconfig);
 chmod 0744,'debian/rules';
 
 # control needs to be built up separately but in a different way
-build_control_file();
+$helper->build_control_file($apps);
 
 # Build the package
 `dpkg-buildpackage -rfakeroot -us -uc --source-option=--format='3.0 (native)'`; # use native to stop complaints about <packagename>.<upstreamversion>
@@ -103,39 +103,5 @@ if ($? gt 0) {
 `mv changelog debian/`;
 
 exit 0;
-
-
-# build up the control file. start with the source package
-# and then for each application, append a binary package section
-sub build_control_file {
-    # source package
-    # the template file already contains the source package declaration.
-    # for each application we need to add a binary package declarataion from a template.
-    my $control = $helper->template_file_string('control');
-    my @controlsubst = qw(DEPENDENCIES CONFLICTS RECOMMENDS SUGGESTS PREDEPENDS);
-
-    foreach my $appname (keys %$apps) {
-        my $app = $apps->{$appname};
-        foreach my $subst (@controlsubst) {
-            $globalconfig{$subst} = '';
-            if ($app->{lc($subst)}) {
-                foreach my $package (keys %{$app->{lc($subst)}}) {
-                    $globalconfig{$subst} .= $package;
-                    if ($app->{lc($subst)}->{$package}) {
-                        $globalconfig{$subst} .= " ( $app->{lc($subst)}->{$package} )";
-                    }
-                    $globalconfig{$subst} .= ' ,';
-                }
-                $globalconfig{$subst} =~ s/.$//; # take off the last ,
-            }
-        }
-        if ($app->{wantsdb}) {
-            $app->{appconfig}->{PREDEPENDS} .= ', dbconfig-common';
-        }
-        $control .= $helper->template_file_string('control.binarytemplate', $app->{appconfig}, $appname);
-    }
-
-    write_file('debian/control', $control);
-}
 
 

@@ -72,4 +72,39 @@ sub safe_wwwroot {
     return $safewwwroot;
 
 }
+
+# build up the control file. start with the source package
+# and then for each application, append a binary package section
+sub build_control_file {
+    my $self = shift;
+    my $apps = shift;
+    # the template file already contains the source package declaration.
+    # for each application we need to add a binary package declarataion from a template.
+    my $control = $self->template_file_string('control');
+    my @controlsubst = qw(DEPENDENCIES CONFLICTS RECOMMENDS SUGGESTS PREDEPENDS);
+
+    foreach my $appname (keys %$apps) {
+        my $app = $apps->{$appname};
+        foreach my $subst (@controlsubst) {
+            $self->{globalconfig}->{$subst} = '';
+            if ($app->{lc($subst)}) {
+                foreach my $package (keys %{$app->{lc($subst)}}) {
+                    $self->{globalconfig}->{$subst} .= $package;
+                    if ($app->{lc($subst)}->{$package}) {
+                        $self->{globalconfig}->{$subst} .= " ( $app->{lc($subst)}->{$package} )";
+                    }
+                    $self->{globalconfig}->{$subst} .= ' ,';
+                }
+                $self->{globalconfig}->{$subst} =~ s/.$//; # take off the last ,
+            }
+        }
+        if ($app->{wantsdb}) {
+            $app->{appconfig}->{PREDEPENDS} .= ', dbconfig-common';
+        }
+        $control .= $self->template_file_string('control.binarytemplate', $app->{appconfig}, $appname);
+    }
+
+    write_file('debian/control', $control);
+}
+
 1
