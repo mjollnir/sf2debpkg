@@ -3,7 +3,7 @@ all: build
 clean:
 
 build:
-	packaging/maketime.pl
+    packaging/maketime.pl
 debug:
 
 .PHONY: build
