@@ -48,7 +48,7 @@ apps:
             - 'app/main'
             - 'src/autoload.php'
     static:
-        description: 'All static content for JOIZ websites'
+        description: 'All static website content'
         prebuild:
             - 'app/main/console assets:install web'
             - 'mkdir -p web/css'
