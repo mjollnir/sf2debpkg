@@ -3,6 +3,7 @@ package Liip::Symfony2::Application;
 use strict;
 use warnings;
 
+use Cwd;
 use File::Slurp;
 use File::Basename;
 use FindBin;
@@ -77,7 +78,7 @@ sub make_dynamic_yml {
             $dynamictemplate->{parameters}->{$key} = $newkey;
             $self->{dynamicparams}->{$key} = $value;
         } else {
-            #TODO support nested objects later? (including extra databases)
+            # TODO support nested objects later? (including extra databases)
             if ($key ne 'dynamic.doctrine.dbal.default') {
                 warn "Found an unsupported parameter type in dynamic.yml.dist: $key";
                 next;
@@ -113,10 +114,36 @@ sub make_dynamic_debian_constructs {
     }
 }
 
-
 sub sanity_check {
     my $self = shift;
-    if ($self->{wantsdb}) { #sanity check
+    my $cwd = getcwd();
+    my $file;
+
+    # directory structure sanity check
+    $file = "app/$self->{name}";
+    unless (-r "$cwd/$file") {
+        die("$self->{name} is missing directory in the app dir: $file");
+    }
+
+    # frontend sanity check
+    if ($self->{frontend}) {
+        # TODO maybe the kernel check is overzealous?
+        $file = "app/$self->{name}/".ucfirst($self->{name})."Kernel.php";
+        unless (-r "$cwd/$file") {
+            die("$self->{name} wants a frontend but is missing the kernel in the expected location: $file");
+        }
+
+        $file = "web/$self->{name}.php";
+        unless (-r "$cwd/$file") {
+            die("$self->{name} wants a frontend but is missing the frontend controller in the expected location: $file");
+        }
+        if (-e "$cwd/web/index.php") {
+            die("$self->{name} wants a frontend but the existing index.php will be overwritten by: $file");
+        }
+    }
+
+    # db sanity check
+    if ($self->{wantsdb}) {
         unless ($self->{dbconfig}
             && $self->{dbconfig}->{create}
             && $self->{dbconfig}->{dbtypes}
