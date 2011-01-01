@@ -80,11 +80,11 @@ my $appprofiles = $config->{apps};
 my $globalconfig = $config->{project};
 
 unless ($appprofiles && $globalconfig) {
-    die "Misformed yml structure? apps: and project: must both be present!";
+    die "Malformed yml structure? 'apps' and 'project' must both be present!";
 }
 
 unless ($globalconfig->{projectname} && $globalconfig->{maintainername} && $globalconfig->{maintaineremail}) {
-    die "Misformed yaml structure? proejct: must contain projectname: and maintainername: and maintaineremail";
+    die "Malformed yaml structure? 'project' must contain 'projectname' and 'maintainername' and 'maintaineremail'";
 }
 
 # backwards compatibility - all these used to be in the old config.pl, and are used as substvars:
@@ -156,7 +156,7 @@ $helper->build_control_file($apps);
 # Build the package
 `dpkg-buildpackage -rfakeroot -us -uc --source-option=--format='3.0 (native)'`; # use native to stop complaints about <packagename>.<upstreamversion>
 if ($? gt 0) {
-    die("It appears dpkb-buildpackage failed to run. Not cleaning out the debian directory!");
+    die("It appears dpkg-buildpackage failed to run. Not cleaning out the debian directory!");
     exit 1;
 }
 
