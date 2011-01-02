@@ -155,7 +155,7 @@ $helper->build_control_file($apps);
 
 # Build the package
 #`dpkg-buildpackage -rfakeroot -us -uc --source-option=--format='3.0 (native)'`; # use native to stop complaints about <packagename>.<upstreamversion>
-print "ignore any warnings about dpkg-source: warning: source directory 'XXX' is not <sourcepackage>-<upstreamversion>";
+print "NOTE: ignore any warnings about dpkg-source: warning: source directory 'XXX' is not <sourcepackage>-<upstreamversion>\n";
 `dpkg-buildpackage -rfakeroot -us -uc`;
 if ($? gt 0) {
     die("It appears dpkg-buildpackage failed to run. Not cleaning out the debian directory!");
