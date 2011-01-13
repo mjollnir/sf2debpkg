@@ -142,6 +142,8 @@ sub sanity_check {
         }
     }
 
+    # TODO add sanity check for bundles section in packagemanifest.yml
+
     # db sanity check
     if ($self->{wantsdb}) {
         unless ($self->{dbconfig}
