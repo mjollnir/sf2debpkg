@@ -3,9 +3,14 @@ Upstream Author(s):
     Peter Bulmer
     Matt Clarkson
 
+  With adaptations to work with Symfony2 by:
+    Penny Leach
+    Lukas Smith
+
 Copyright:
 
     Copyright (C) 2010, 2011 Catalyst IT
+    Copyright (C) 2010, 2011 Liip AG
 
 License:
 
@@ -28,5 +33,6 @@ Public License version 3 can be found in `/usr/share/common-licenses/GPL-3'.
 The Debian packaging is:
 
     Copyright (C) 2010, 2011 Catalyst IT
+    Copyright (C) 2010, 2011 Liip AG
 
 and is licensed under the GPL version 3, see above.
