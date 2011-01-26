@@ -97,6 +97,7 @@ sub _make_safe_debconf_key {
     my ($self, $key) = @_;
     $key =~ s/dynamic\.//;
     $key =~ s/\./_/g;
+    $key =~ s/-/_/g;
     return uc '__' . $key . '__';
 }
 

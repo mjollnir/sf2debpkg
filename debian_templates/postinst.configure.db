@@ -13,6 +13,9 @@
 
 
 # make sure we take out invalid values from dbconfig common
-        sed -i 's/pgsql/PDOPgSql/' $DYNAMIC_CONF_TEMPLATE2;
+        sed -i 's/ pgsql/ pdo_pgsql/' $DYNAMIC_CONF_TEMPLATE2;
+        sed -i 's/PDOPgSql/pdo_pgsql/' $DYNAMIC_CONF_TEMPLATE2;
+# fix up an earlier mistake
+        sed -i 's/pdo_pdo_/pdo_/' $DYNAMIC_CONF_TEMPLATE2;
 
 
