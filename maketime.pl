@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 #
 # Copyright (C) 2010, 2011 Catalyst IT
+# Copyright (C) 2010, 2011 Liip AG
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
