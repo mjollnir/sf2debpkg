@@ -305,13 +305,15 @@ The version number will be slightly different each time, relative to the value i
 
 ### Installing the packages
 
-Make sure that the debian priority is low:
+If you're installing a package that's going to use a database on a remote machine, make sure that the debian priority is low:
 
     dpkg-reconfigure debconf
 
-Frontend can be set to anything - dialogue is fine. Priority should be low.
+Frontend can be set to anything - dialogue is fine. Priority should be low.  This is because of a limitation in dbconfig-common (See: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=607171)
 
 Before trying to install a package that wants a database (for example symfony2-site-foo-main), the database server must be able to be connected to. The package will not create the database for you.
+
+Note: Theoretically this works with dbconfig-common, and indeed we're using it for other projects, but it hasn't been tested with Symony2.  It may be enough to change the apps.yourapp.dbconfig.create parameter to true in packagemanifest.yml to enable this, but it's not yet tested.
 
 Finally its recommended to setup a debian package repository to distribute the packages. This way on the target servers you just need to setup the custom repository via the following line in its apt sources:
 
