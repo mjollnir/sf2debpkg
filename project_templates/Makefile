@@ -1,9 +1,17 @@
-all: build
+all: test build
 
 clean:
 
 build:
-    packaging/maketime.pl
+	packaging/maketime.pl
 debug:
 
-.PHONY: build
+test:
+ifneq ($(wildcard app/*/config/dynamic.yml),)
+	echo "Sorry, you should not run this in your working directory" && false
+endif
+
+
+.PHONY: test build
+
+.SILENT: test
