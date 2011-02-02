@@ -328,3 +328,8 @@ and simply type the following command to either install or upgrade:
 All the values in all dynamic.yml files can be changed by doing:
 
     dpkg-reconfigure symfony2-site-foo-APPNAME
+
+Credits
+=======
+
+This work is based on the original sitepackaging.git found at http://git.catalyst.net.nz/gw?p=sitepackaging.git;a=summary which was originally written by Pete Bulmer at Catalyst IT.  The Symfony2 implementation doesn't have a common ancestor with this, but re-uses some code and is definitely based on the same idea. 
