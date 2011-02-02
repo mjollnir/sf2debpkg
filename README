@@ -19,9 +19,7 @@ Setup
 
 To setup the packaging scripts you can use git to either clone the sitepackaging repository in to your Symfony2 projects root directory or set it up as a submobule at your own discretion:
 
-    git clone -n gitosis@git.liip.ch:public/elearning/deployment/sitepackaging.git packaging
-    cd packaging
-    git checkout -b symfony2 origin/symfony2
+    git clone git://github.com/mjollnir/sf2debpkg.git packaging
 
 Make sure the following debian modules are installed
 
@@ -43,17 +41,18 @@ web/main.php (will be installed as web/index.php)
 
     <?php
 
+    require_once __DIR__.'/../app/bootstrap.php';
     require_once __DIR__.'/../app/main/MainKernel.php';
 
     use Symfony\Component\HttpFoundation\Request;
 
     $kernel = new MainKernel('prod', false);
-    $kernel->handle(new Request())->send();
-    app/main/MainKernel.php
+    //$kernel = new MainCache(new MainKernel('prod', false));
+    $kernel->handle(Request::createFromGlobals())->send();
+
+app/main/MainKernel.php
 
     <?php
-
-    require_once __DIR__.'/../../src/autoload.php';
 
     use Symfony\Component\HttpKernel\Kernel;
     use Symfony\Component\DependencyInjection\Loader\LoaderInterface;
@@ -69,7 +68,8 @@ web/main.php (will be installed as web/index.php)
         {
             $bundles = array(
                 new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-                // add all relevant Bundle as usual
+
+                // enable third-party bundles
             );
 
             if ($this->isDebug()) {
@@ -79,15 +79,6 @@ web/main.php (will be installed as web/index.php)
             return $bundles;
         }
 
-        public function registerBundleDirs()
-        {
-            return array(
-                'Application'     => __DIR__.'/../../src/Application',
-                'Bundle'          => __DIR__.'/../../src/Bundle',
-                'Symfony\\Bundle' => __DIR__.'/../../src/vendor/symfony/src/Symfony/Bundle',
-            );
-        }
-
         public function registerContainerConfiguration(LoaderInterface $loader)
         {
             // use YAML for configuration
@@ -95,6 +86,7 @@ web/main.php (will be installed as web/index.php)
             $loader->load(__DIR__.'/config/config_'.$this->getEnvironment().'.yml');
         }
     }
+
 
 packagemanifest.yml
 -------------------
