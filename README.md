@@ -21,13 +21,19 @@ To setup the packaging scripts you can use git to either clone the sitepackaging
 
     git clone git://github.com/mjollnir/sf2debpkg.git packaging
 
-Make sure the following debian modules are installed
+Make sure the following debian packages are installed
 
     sudo apt-get install dpkg-dev
     sudo apt-get install debhelper
     sudo apt-get install devscripts
     sudo apt-get install libconfig-yaml-perl
     sudo apt-get install libfile-slurp-perl
+
+Initial Run
+===========
+
+To generate skeleton packagemanifest.yml, Makefile and debian/changelog files run the following command:
+./packaging/maketime.pl
 
 Assumptions
 ===========
@@ -202,23 +208,6 @@ app/main/config/apachesettings
     # directives can be placed here, to be included into the virtualhost
 
     __APACHE_DEFAULT_REWRITE__
-
-The Makefile
-------------
-
-Add a Makefile file to the root directory.
-
-Makefile:
-
-    all: build
-
-    clean:
-
-    build:
-        packaging/maketime.pl
-    debug:
-
-    .PHONY: build
 
 The debian/ files
 -----------------
