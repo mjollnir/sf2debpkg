@@ -33,7 +33,7 @@ Initial Run
 ===========
 
 To generate skeleton packagemanifest.yml, Makefile and debian/changelog files run the following command:
-./packaging/maketime.pl
+    ./packaging/maketime.pl
 
 Assumptions
 ===========
@@ -98,6 +98,8 @@ packagemanifest.yml
 -------------------
 
 This file defines the multiple applications that are built by the packaging procedure. The rough structure is so:
+
+packagemanifest.yml
 
     constants:
         database: &database
@@ -178,13 +180,14 @@ The dynamic.yml should be included and used (rather than config.yml) for all dyn
     parameters:
         dynamic.bar: 123
         dynamic.doctrine.dbal.default:
-            driver:   PDOPgSql
+            driver:   pdo_pgsql
             dbname:   XXXXXXXX
             user:     XXXXXXXX
             password: ~
-    The dynamic.yml can then be imported into config.yml.
 
-    app/main/config/config.yml
+The dynamic.yml can then be imported into config.yml.
+
+app/main/config/config.yml
 
     imports:
         - { resource: dynamic.yml }
