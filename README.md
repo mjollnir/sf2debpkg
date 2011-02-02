@@ -104,7 +104,7 @@ This file defines the multiple applications that are built by the packaging proc
             'php5-pgsql': ~
             'postgresql-client': ~
         web: &web
-            'php5': '>=5.3.0'
+            'php5': '>=5.3.5'
             'libapache2-mod-php5': ~
             'php5-curl': ~
 
@@ -118,23 +118,23 @@ This file defines the multiple applications that are built by the packaging proc
             frontend: main.php
             description: 'Main website'
             dependencies:
-               << : [ *database, *web ]
+                << : [ *database, *web ]
             conflicts: ~
             recommends: ~
             suggests: ~
             predepends: ~
             cron:
-                #'another:console:command': "0-5/2 * * * *"
+                #'your:console:command': "0-5/2 * * * *"
             bundles:
-                - 'src/vendor/symfony'
-                - 'src/vendor/zend/library/Zend/Log'
-                - 'src/vendor/swiftmailer'
-                - 'src/vendor/doctrine'
-                - 'src/vendor/doctrine-migrations'
-                - 'src/vendor/doctrine-dbal'
-                - 'src/vendor/doctrine-common'
-                - 'src/vendor/twig'
-                - 'src/Application/YourBundle'
+                - 'vendor/symfony'
+                - 'vendor/zend/library/Zend/Log'
+                - 'vendor/swiftmailer'
+                - 'vendor/doctrine'
+                - 'vendor/doctrine-migrations'
+                - 'vendor/doctrine-dbal'
+                - 'vendor/doctrine-common'
+                - 'vendor/twig'
+                - 'src/YourProject/YourBundle'
             assets: ~
             profiles:
                 - 'web'
@@ -143,20 +143,19 @@ This file defines the multiple applications that are built by the packaging proc
                 dbtypes: pgsql
                 create: false
                 postinst:
+                    # probably better to run migrations here :)
                     - 'doctrine:schema:drop --force'
                     - 'doctrine:schema:create'
             installfiles:
                 - 'app/main'
-                - 'src/autoload.php'
+                - 'app/autoload.php'
+                - 'app/boostrap.php'
         static:
             description: 'All static website content'
             prebuild:
                 - 'cp app/main/config/dynamic.yml.dist app/main/config/dynamic.yml'
                 - 'app/main/console assets:install web'
                 - 'rm app/main/config/dynamic.yml'
-                # example: generate static version of the less files to css
-                #- 'mkdir -p web/css'
-                #- 'dev/less/getcss.sh main > web/css/main.css'
             dependencies:
                 <<: *web
             bundles: ~
