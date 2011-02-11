@@ -144,10 +144,10 @@ packagemanifest.yml
             dbconfig:
                 dbtypes: pgsql
                 create: false
-                postinst:
-                    # probably better to run migrations here :)
-                    - 'doctrine:schema:drop --force'
-                    - 'doctrine:schema:create'
+            postinst:
+                # probably better to run migrations here :)
+                - 'doctrine:schema:drop --force'
+                - 'doctrine:schema:create'
             installfiles:
                 - 'app/main'
                 - 'app/autoload.php'

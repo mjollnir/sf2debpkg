@@ -300,8 +300,15 @@ sub make_postinst {
 
     my $postinstconfigureenddb = '';
 
+    my $pi = '';
     if ($self->{wantsdb} && $self->{dbconfig}->{postinst}) {
-        my $pi = $self->{dbconfig}->{postinst};
+        $pi = $self->{dbconfig}->{postinst};
+        warn "Using depcreated dbconfig only postinst. Switch to global postinst!";
+    }
+    if ($self->{postinst}) {
+        $pi = $self->{postinst}
+    }
+    if ($pi) {
         $postinstconfigureenddb .= 'su -c "{ cd _-_WWWROOT_-_ && ';
         my $errstr = '';
         if (ref $pi eq 'ARRAY') {
