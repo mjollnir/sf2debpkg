@@ -126,7 +126,7 @@ packagemanifest.yml
             suggests: ~
             predepends: ~
             cron:
-                - 'your:console:command': "0-5/2 * * * *"
+                #'your:console:command': "0-5/2 * * * *"
             bundles:
                 - 'vendor/symfony'
                 - 'vendor/zend/library/Zend/Log'
