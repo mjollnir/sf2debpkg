@@ -148,6 +148,7 @@ packagemanifest.yml
                 # probably better to run migrations here :)
                 - 'doctrine:schema:drop --force'
                 - 'doctrine:schema:create'
+            debianpostinst: 'shell commands to run "as is" (you can use _-_WWWROOT_-_ and it will be replaced)
             installfiles:
                 - 'app/main'
                 - 'app/autoload.php'

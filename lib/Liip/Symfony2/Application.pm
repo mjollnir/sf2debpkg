@@ -325,6 +325,10 @@ sub make_postinst {
         $postinstconfigureenddb = $self->{helper}->template_string_string($postinstconfigureenddb, $self->{appconfig}, $self->{name});
     }
 
+    if ($self->{debianpostinst}) { # special hook for "advanced" (read: hacky) usages
+        $postinstconfigureenddb .= "\n" . $self->{helper}->template_string_string($self->{debianpostinst}, $self->{appconfig}, $self->{name});
+    }
+
     my $s2 = $self->{isstatic} ? '' : 'y';
     $postinst =~ s/__POSTINST.CONSTANTS.WEB__/$postinstconstantsweb/;
     $postinst =~ s/__POSTINST.CONSTANTS.DB__/$postinstconstantsdb/;

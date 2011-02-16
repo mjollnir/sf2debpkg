@@ -66,10 +66,10 @@ case "$1" in
             ln -s $DYNAMIC_CONF_PATH $DYNAMIC_CONF_WWWPATH
         fi
 
-        rm -rf $TMP_M4_FILE;
-
         __POSTINST.CONFIGURE.END.DB__
         __POSTINST.CONFIGURE.END.WEB__
+
+        rm -rf $TMP_M4_FILE;
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
