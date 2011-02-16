@@ -97,7 +97,7 @@ app/main/MainKernel.php
 packagemanifest.yml
 -------------------
 
-This file defines the multiple applications that are built by the packaging procedure. The rough structure is so:
+This file defines the multiple applications that are built by the packaging procedure. In case it needs stating, you can quote single quotes like so ' something ''quoted'' '. The rough structure is so:
 
 packagemanifest.yml
 
