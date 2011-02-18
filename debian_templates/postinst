@@ -47,6 +47,14 @@ case "$1" in
         # Build up the m4 templating file:
         touch $TMP_M4_FILE
 
+        # make sure the webserver can write to the app cache and logs
+        if [ -e  _-_WWWROOT_-_/app/_-_APPNAME_-_/cache ]; then
+            rm -rf _-_WWWROOT_-_/app/_-_APPNAME_-_/cache/* #clear it #TODO replace this with app/APP/console
+            chown -R www-data _-_WWWROOT_-_/app/_-_APPNAME_-_/cache
+        fi
+        if [ -e  _-_WWWROOT_-_/app/_-_APPNAME_-_/logs ]; then
+            chown -R www-data _-_WWWROOT_-_/app/_-_APPNAME_-_/logs
+        fi
 
         __POSTINST.CONFIGURE.WEB__
         __POSTINST.CONFIGURE.DB__

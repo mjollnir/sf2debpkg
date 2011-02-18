@@ -129,11 +129,3 @@ _EOHC
         # Now, template the shared config file
         m4 $TMP_M4_FILE $APACHE_CONF_SHARED_TEMPLATE > $APACHE_CONF_SHARED_FILE
 
-        # make sure the webserver can write to the app cache and logs
-        if [ -e  _-_WWWROOT_-_/app/_-_APPNAME_-_/cache ]; then
-            rm -rf _-_WWWROOT_-_/app/_-_APPNAME_-_/cache/* #clear it #TODO replace this with app/APP/console
-            chown -R www-data _-_WWWROOT_-_/app/_-_APPNAME_-_/cache
-        fi
-        if [ -e  _-_WWWROOT_-_/app/_-_APPNAME_-_/logs ]; then
-            chown -R www-data _-_WWWROOT_-_/app/_-_APPNAME_-_/logs
-        fi

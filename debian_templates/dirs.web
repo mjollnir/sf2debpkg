@@ -1,9 +1,2 @@
-_-_WWWROOTNS_-_
-_-_WWWROOTNS_-_/web
-_-_WWWROOTNS_-_/app
-_-_WWWROOTNS_-_/app/_-_APPNAME_-_
-_-_WWWROOTNS_-_/app/_-_APPNAME_-_/logs
-_-_WWWROOTNS_-_/app/_-_APPNAME_-_/cache
-_-_WWWROOTNS_-_/src
 var/log/sitelogs/_-_PACKAGENAME_-_
 var/lib/sitedata/_-_PACKAGENAME_-_
