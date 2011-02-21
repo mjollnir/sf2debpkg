@@ -169,10 +169,13 @@ chmod 0744,'debian/rules';
 # control needs to be built up separately but in a different way
 $helper->build_control_file($apps);
 
+`mkdir -p debian/source`;
+`echo '3.0 (native)' > debian/source/format`;
+`echo 'diff-ignore = \.git' > debian/source/options`;
+`echo 'tar-ignore = .git/*' >> debian/source/options`;
+
 # Build the package
-#`dpkg-buildpackage -rfakeroot -us -uc --source-option=--format='3.0 (native)'`; # use native to stop complaints about <packagename>.<upstreamversion>
-print "NOTE: ignore any warnings about dpkg-source: warning: source directory 'XXX' is not <sourcepackage>-<upstreamversion>\n";
-`dpkg-buildpackage -rfakeroot -us -uc`;
+`dpkg-buildpackage -rfakeroot -us -uc -i -I`;
 if ($? gt 0) {
     die("It appears dpkg-buildpackage failed to run. Not cleaning out the debian directory!");
     exit 1;
