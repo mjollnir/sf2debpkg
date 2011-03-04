@@ -37,7 +37,6 @@ binary:
 		--exclude=/Tests/ \
 		--exclude=/documentation/ \
 		--exclude=console_dev \
-		--exclude=zend
 
 	_-_RENAMEFILES_-_
 
