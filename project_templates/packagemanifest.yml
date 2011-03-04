@@ -25,14 +25,15 @@ apps:
         cron:
             #'another:console:command': "0-5/2 * * * *"
         bundles:
-            - 'src/vendor/symfony'
-            - 'src/vendor/zend/library/Zend/Log'
-            - 'src/vendor/swiftmailer'
-            - 'src/vendor/doctrine'
-            - 'src/vendor/doctrine-migrations'
-            - 'src/vendor/doctrine-dbal'
-            - 'src/vendor/doctrine-common'
-            - 'src/vendor/twig'
+            - 'vendor/symfony'
+            - 'vendor/zend/library/Zend/Log'
+            - 'vendor/swiftmailer'
+            - 'vendor/doctrine'
+            - 'vendor/doctrine-migrations'
+            - 'vendor/doctrine-dbal'
+            - 'vendor/doctrine-common'
+            - 'vendor/twig'
+            - 'vendor/zend-log'
             - 'src/Application/YourBundle'
         assets: ~
         profiles:
@@ -41,9 +42,9 @@ apps:
         dbconfig:
             dbtypes: pgsql
             create: false
-            postinst:
-                - 'doctrine:schema:drop --force'
-                - 'doctrine:schema:create'
+        postinst:
+            - 'doctrine:schema:drop --force'
+            - 'doctrine:schema:create'
         installfiles:
             - 'app/main'
             - 'src/autoload.php'
