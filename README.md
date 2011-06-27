@@ -109,12 +109,12 @@ packagemanifest.yml
             'php5': '>=5.3.0'
             'libapache2-mod-php5': ~
             'php5-curl': ~
-    
+
     project:
         projectname: yourproject
         maintainername: 'Your Team Name'
         maintaineremail: 'you@email.com'
-    
+
     apps:
         main:
             frontend: main.php
@@ -128,14 +128,14 @@ packagemanifest.yml
             cron:
                 #'some:console:command': "0-5/2 * * * *"
             bundles:
-                - 'src/vendor/symfony'
-                - 'src/vendor/zend/library/Zend/Log'
-                - 'src/vendor/swiftmailer'
-                - 'src/vendor/doctrine'
-                - 'src/vendor/doctrine-migrations'
-                - 'src/vendor/doctrine-dbal'
-                - 'src/vendor/doctrine-common'
-                - 'src/vendor/twig'
+                - 'vendor/symfony'
+                - 'vendor/zend/library/Zend/Log'
+                - 'vendor/swiftmailer'
+                - 'vendor/doctrine'
+                - 'vendor/doctrine-migrations'
+                - 'vendor/doctrine-dbal'
+                - 'vendor/doctrine-common'
+                - 'vendor/twig'
                 - 'src/Acme/YourBundle'
             assets: ~
             profiles:
@@ -150,7 +150,7 @@ packagemanifest.yml
                 - 'app/main'
                 - 'src/autoload.php'
                 - 'app/boostrap.php.cache'
-    
+
         dbmigration:
             description: 'DB Schema and Migrations package'
             dependencies:
@@ -176,7 +176,7 @@ packagemanifest.yml
                 - 'app/dbmigration'
                 - 'app/autoload.php'
                 - 'app/bootstrap.php.bin'
-    
+
         static:
             description: 'All static website content'
             prebuild:
@@ -361,4 +361,4 @@ All the values in all dynamic.yml files can be changed by doing:
 Credits
 =======
 
-This work is based on the original sitepackaging.git found at http://git.catalyst.net.nz/gw?p=sitepackaging.git;a=summary which was originally written by Pete Bulmer at Catalyst IT.  The Symfony2 implementation doesn't have a common ancestor with this, but re-uses some code and is definitely based on the same idea. 
+This work is based on the original sitepackaging.git found at http://git.catalyst.net.nz/gw?p=sitepackaging.git;a=summary which was originally written by Pete Bulmer at Catalyst IT.  The Symfony2 implementation doesn't have a common ancestor with this, but re-uses some code and is definitely based on the same idea.
