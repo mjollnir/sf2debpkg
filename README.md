@@ -233,6 +233,8 @@ Apache settings
 ---------------
 
 By default a mod_rewrite setting will be installed to point every non existent file in the web root to index.php (note that webappname.php will be installed as index.php). However additional configurations can be done with an apachesettings file.
+Hint: the installation paths are defined at "make" time and are derived from the package name. So it is safe to put a hardcoded path value into the apachesettings file since the installation paths are known (example: /var/www/<package name>/web for the document root).
+
 
 app/main/config/apachesettings
 
