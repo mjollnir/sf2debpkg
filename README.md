@@ -171,7 +171,7 @@ packagemanifest.yml
                 create: false
             postinst:
                 - 'doctrine:migrations:migrate -n -q'
-                #- 'doctrine:data:load --fixtures=src/Acme/YourBundle/Resources/data/fixtures --append=true'
+                #- 'doctrine:fixtures:load --fixtures=src/Acme/YourBundle/Resources/data/fixtures --append=true'
             installfiles:
                 - 'app/dbmigration'
                 - 'app/autoload.php'
