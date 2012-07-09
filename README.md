@@ -106,7 +106,7 @@ packagemanifest.yml
             'php5-pgsql': ~
             'postgresql-client': ~
         web: &web
-            'php5': '>=5.3.5'
+            'php5': '>=5.3.0'
             'libapache2-mod-php5': ~
             'php5-curl': ~
 
@@ -120,13 +120,13 @@ packagemanifest.yml
             frontend: main.php
             description: 'Main website'
             dependencies:
-                << : [ *database, *web ]
+               << : [ *database, *web ]
             conflicts: ~
             recommends: ~
             suggests: ~
             predepends: ~
             cron:
-                #'your:console:command': "0-5/2 * * * *"
+                #'some:console:command': "0-5/2 * * * *"
             bundles:
                 - 'vendor/symfony'
                 - 'vendor/zend/library/Zend/Log'
@@ -136,7 +136,7 @@ packagemanifest.yml
                 - 'vendor/doctrine-dbal'
                 - 'vendor/doctrine-common'
                 - 'vendor/twig'
-                - 'src/YourProject/YourBundle'
+                - 'src/Acme/YourBundle'
             assets: ~
             profiles:
                 - 'web'
@@ -144,20 +144,45 @@ packagemanifest.yml
             dbconfig:
                 dbtypes: pgsql
                 create: false
-            postinst:
-                # probably better to run migrations here :)
-                - 'doctrine:schema:drop --force'
-                - 'doctrine:schema:create'
+            postinst: ~
             debianpostinst: 'shell commands to run "as is" (you can use _-_WWWROOT_-_ and it will be replaced)
             installfiles:
                 - 'app/main'
+                - 'src/autoload.php'
+                - 'app/boostrap.php.cache'
+
+        dbmigration:
+            description: 'DB Schema and Migrations package'
+            dependencies:
+                'php5-cli': ~
+            bundles:
+              - 'vendor/doctrine'
+              - 'vendor/symfony'
+              - 'vendor/doctrine-migrations'
+              - 'vendor/doctrine-data-fixtures'
+              - 'vendor/doctrine-dbal'
+              - 'vendor/doctrine-common'
+              - 'src/Acme/YourBundle'
+            assets: ~
+            profiles:
+                - 'db'
+            dbconfig:
+                dbtypes: pgsql
+                create: false
+            postinst:
+                - 'doctrine:migrations:migrate -n -q'
+                #- 'doctrine:fixtures:load --fixtures=src/Acme/YourBundle/Resources/data/fixtures --append=true'
+            installfiles:
+                - 'app/dbmigration'
                 - 'app/autoload.php'
-                - 'app/boostrap.php'
+                - 'app/bootstrap.php.bin'
+
         static:
             description: 'All static website content'
             prebuild:
                 - 'cp app/main/config/dynamic.yml.dist app/main/config/dynamic.yml'
                 - 'app/main/console assets:install web'
+                - 'app/main/console asetic:dump web'
                 - 'rm app/main/config/dynamic.yml'
             dependencies:
                 <<: *web
@@ -165,6 +190,7 @@ packagemanifest.yml
             assets:
                 - 'web/bundles/'
                 - 'web/css/'
+                - 'web/js/'
             profiles:
                 - 'web'
                 - 'static'
@@ -201,10 +227,14 @@ app/main/config/config.yml
     foo.config:
         bar: %dynamic.bar%
 
+Note: Right now there is a "hack" for handling writing the proper PDO driver when using the "dbconfig" settings. As a result the dynamic.yml is manipulated after Debian has created the file. As a result Debian will think that the user has done local changes to the config file during the installation. As a result when asked say yes to the question of to "OVERWRITE WITH THE PACKAGE MAINTAINER'S VERSION".
+
 Apache settings
 ---------------
 
-By default a mod_rewrite setting will be installed to point every non existent file in the web root to index.php (note that webappname.php will be installed as index.php). However additional configurations can be done with an apachesettings file.
+By default a mod_rewrite setting will be installed to point every non existent file in the web root to index.php (note that webappname.php will be installed as index.php). However additional configurations can be done with an apachesettings file.  
+Hint: the installation paths are defined at *make* time and are derived from the package name. So it is safe to put a hardcoded path value into the apachesettings file since the installation paths are known (example: /var/www/*&lt;package name&gt;*/web for the document root).
+
 
 app/main/config/apachesettings
 
@@ -333,4 +363,4 @@ All the values in all dynamic.yml files can be changed by doing:
 Credits
 =======
 
-This work is based on the original sitepackaging.git found at http://git.catalyst.net.nz/gw?p=sitepackaging.git;a=summary which was originally written by Pete Bulmer at Catalyst IT.  The Symfony2 implementation doesn't have a common ancestor with this, but re-uses some code and is definitely based on the same idea. 
+This work is based on the original sitepackaging.git found at http://git.catalyst.net.nz/gw?p=sitepackaging.git;a=summary which was originally written by Pete Bulmer at Catalyst IT.  The Symfony2 implementation doesn't have a common ancestor with this, but re-uses some code and is definitely based on the same idea.
